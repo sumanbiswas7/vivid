@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "vivid_2",
-    "slug": "vivid_2",
-    "version": "1.0.0",
+    "name": "vivid",
+    "slug": "vivid",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -23,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.sumanbiswas.vivid"
     },
     "web": {
       "favicon": "./assets/favicon.png"
