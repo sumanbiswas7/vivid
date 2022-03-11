@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
-  StatusBar as native,
+  StatusBar as SBAR,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
@@ -36,7 +37,7 @@ import { UserImg } from "../components/Post/UserImg";
 
 export default function CreatePost({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
-  // const posts = useSelector((state) => state.posts);
+  const initialLoadContex = useSelector((state) => state.initialLoad);
   const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
   const [buttonLoader, setButtonLoader] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -45,6 +46,7 @@ export default function CreatePost({ navigation }) {
   const [caption, setCaption] = useState("");
   const [nullUpload, setNullUpload] = useState("");
   const { colors } = useTheme();
+
   async function handlePost() {
     if (!image && !caption) {
       setNullUpload("Hey you can't just upload nothing !");
@@ -186,110 +188,129 @@ export default function CreatePost({ navigation }) {
     }
   }
   return (
-    <View style={styles.container}>
-      <ImageModal handleClick={handleChooseImageClick} />
-      <LinearGradient
-        start={{ x: 0.1, y: 0.1 }}
-        colors={[colors.gradient_2, colors.gradient_1]}
-        style={styles.page_header_box}
-      >
-        <View style={styles.user_data_box}>
-          <UserImg
-            profile_img={currentuser.profile}
-            size={50}
-            col_1="#cccccc"
-            col_2="#fff"
-          />
-          <View style={{ marginLeft: 10 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Text style={styles.user_data_name}>{currentuser.username}</Text>
-              {currentuser.isVerified ? (
-                <MaterialIcons
-                  style={styles.verified_icon}
-                  size={14}
-                  color="#FF5F6D"
-                  name="verified"
-                />
-              ) : null}
+    <>
+      {initialLoadContex ? (
+        <View style={styles.container}>
+          <ImageModal handleClick={handleChooseImageClick} />
+          <LinearGradient
+            start={{ x: 0.1, y: 0.1 }}
+            colors={[colors.gradient_2, colors.gradient_1]}
+            style={styles.page_header_box}
+          >
+            <View style={styles.user_data_box}>
+              <UserImg
+                profile_img={currentuser.profile}
+                size={50}
+                col_1="#cccccc"
+                col_2="#fff"
+              />
+              <View style={{ marginLeft: 10 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={styles.user_data_name}>
+                    {currentuser.username}
+                  </Text>
+                  {currentuser.isVerified ? (
+                    <MaterialIcons
+                      style={styles.verified_icon}
+                      size={14}
+                      color="#FF5F6D"
+                      name="verified"
+                    />
+                  ) : null}
+                </View>
+                <Text style={styles.user_data_city}>{currentuser.city}</Text>
+              </View>
             </View>
-            <Text style={styles.user_data_city}>{currentuser.city}</Text>
-          </View>
-        </View>
-      </LinearGradient>
-      <View style={styles.page_main_box}>
-        {isUploading ? (
-          <>
-            <Progress.Pie
-              style={{ marginBottom: 20 }}
-              color={colors.gradient_2}
-              progress={progress}
-              size={150}
-            />
-            <Text style={[{ color: colors.gradient_2 }, styles.progress_text]}>
-              Uploading - {progress * 100}%
-            </Text>
-          </>
-        ) : (
-          <>
-            <TextInput
-              onChangeText={(t) => setCaption(t)}
-              style={styles.caption_input}
-              placeholder="write something"
-            />
-            {image ? (
-              <TouchableOpacity
-                onPress={() => toggleModal({ camera: true, home: false })}
-              >
-                <Image style={styles.selected_img} source={{ uri: image }} />
-              </TouchableOpacity>
+          </LinearGradient>
+          <View style={styles.page_main_box}>
+            {isUploading ? (
+              <>
+                <Progress.Pie
+                  style={{ marginBottom: 20 }}
+                  color={colors.gradient_2}
+                  progress={progress}
+                  size={150}
+                />
+                <Text
+                  style={[{ color: colors.gradient_2 }, styles.progress_text]}
+                >
+                  Uploading - {progress * 100}%
+                </Text>
+              </>
             ) : (
               <>
-                <Text style={styles.pick_img_text}>Pick Image</Text>
-                <TouchableOpacity
-                  style={styles.image_picker_box}
-                  onPress={() => toggleModal({ camera: true, home: false })}
-                >
-                  <MaterialIcons
-                    name="add-a-photo"
-                    color={"rgba(166, 166, 166, 0.25)"}
-                    size={120}
-                  />
-                </TouchableOpacity>
+                <TextInput
+                  onChangeText={(t) => setCaption(t)}
+                  style={styles.caption_input}
+                  placeholder="write something"
+                />
+                {image ? (
+                  <TouchableOpacity
+                    onPress={() => toggleModal({ camera: true, home: false })}
+                  >
+                    <Image
+                      style={styles.selected_img}
+                      source={{ uri: image }}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <>
+                    <Text style={styles.pick_img_text}>Pick Image</Text>
+                    <TouchableOpacity
+                      style={styles.image_picker_box}
+                      onPress={() => toggleModal({ camera: true, home: false })}
+                    >
+                      <MaterialIcons
+                        name="add-a-photo"
+                        color={"rgba(166, 166, 166, 0.25)"}
+                        size={120}
+                      />
+                    </TouchableOpacity>
+                  </>
+                )}
               </>
             )}
-          </>
-        )}
 
-        {nullUpload ? (
-          <Text style={styles.upload_err_text}>{nullUpload}</Text>
-        ) : null}
+            {nullUpload ? (
+              <Text style={styles.upload_err_text}>{nullUpload}</Text>
+            ) : null}
 
-        <TouchableOpacity
-          disabled={buttonLoader}
-          onPress={handlePost}
-          style={styles.signup_btn_box}
-        >
-          <LinearGradient
-            start={{ x: 0.9, y: 0.2 }}
-            colors={[colors.gradient_1, colors.gradient_2]}
-            style={styles.signup_btn}
-          >
-            {buttonLoader ? (
-              <Flow size={30} color="#fff" />
-            ) : (
-              <Text style={{ fontWeight: "bold", color: "#fff" }}>POST</Text>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-      <BottomNavBar navigation={navigation} />
-      <StatusBar style="light" backgroundColor={colors.gradient_2} />
-    </View>
+            <TouchableOpacity
+              disabled={buttonLoader}
+              onPress={handlePost}
+              style={styles.signup_btn_box}
+            >
+              <LinearGradient
+                start={{ x: 0.9, y: 0.2 }}
+                colors={[colors.gradient_1, colors.gradient_2]}
+                style={styles.signup_btn}
+              >
+                {buttonLoader ? (
+                  <Flow size={30} color="#fff" />
+                ) : (
+                  <Text style={{ fontWeight: "bold", color: "#fff" }}>
+                    POST
+                  </Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <ActivityIndicator
+          size={25}
+          style={styles.activity}
+          color={colors.gradient_2}
+        />
+      )}
+
+      <StatusBar style="auto" backgroundColor={colors.bg_light} />
+    </>
   );
 }
 
@@ -387,5 +408,9 @@ const styles = StyleSheet.create({
   verified_icon: {
     marginTop: 7,
     marginLeft: 5,
+  },
+  activity: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
 });

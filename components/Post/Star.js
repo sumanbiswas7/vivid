@@ -1,11 +1,11 @@
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-export function StarFill() {
+export function StarFill({ color }) {
   return (
     <FontAwesome
       style={{ marginRight: 3 }}
       name="star"
       size={15}
-      color={"#000"}
+      color={color || "#000"}
     />
   );
 }

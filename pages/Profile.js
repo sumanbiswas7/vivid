@@ -30,7 +30,7 @@ import moment from "moment";
 
 export default function Profile({ navigation }) {
   const currUser = useSelector((state) => state.currentuser);
-  const posts = useSelector((state) => state.posts);
+  const initialLoadContex = useSelector((state) => state.initialLoad);
   const curUserPosts = useSelector((state) => state.currentuserposts);
   const [totalLikes, setTotalLikes] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -42,17 +42,17 @@ export default function Profile({ navigation }) {
       setIsLoaded(true);
     }
   }, [curUserPosts]);
+  console.log(initialLoadContex);
   const { colors } = useTheme();
   const DUMMY_TAGS = [
     {
       title: "Tags",
-      data: currUser.tags,
+      data: currUser.tags || [],
     },
   ];
-
   return (
     <View style={[styles.container, { backgroundColor: colors.bg_dark }]}>
-      {isLoaded ? (
+      {isLoaded && initialLoadContex ? (
         <>
           <View style={[styles.header, { backgroundColor: colors.bg_light }]}>
             <View
@@ -94,31 +94,34 @@ export default function Profile({ navigation }) {
                 size={25}
                 marleft={10}
               />
-              <View style={styles.flex_row}>
-                <Text style={styles.gender}>{currUser.gender}</Text>
-                {currUser.status ? (
-                  <View style={[styles.flex_row]}>
-                    {currUser.status == "single" ? (
-                      <MaterialCommunityIcons
-                        name="heart-broken"
-                        size={17}
-                        style={{ marginTop: 3 }}
-                        color="#444444"
-                      />
-                    ) : (
-                      <MaterialCommunityIcons
-                        name="heart"
-                        size={17}
-                        style={{ marginTop: 3 }}
-                        color="#444444"
-                      />
-                    )}
-                    <Text style={styles.relationship_tex}>
-                      {currUser.status}
-                    </Text>
-                  </View>
-                ) : null}
-              </View>
+              {currUser.gender || currUser.status ? (
+                <View style={styles.flex_row}>
+                  <Text style={styles.gender}>{currUser.gender}</Text>
+                  {currUser.status ? (
+                    <View style={[styles.flex_row]}>
+                      {currUser.status == "single" ? (
+                        <MaterialCommunityIcons
+                          name="heart-broken"
+                          size={17}
+                          style={{ marginTop: 3 }}
+                          color="#444444"
+                        />
+                      ) : (
+                        <MaterialCommunityIcons
+                          name="heart"
+                          size={17}
+                          style={{ marginTop: 3 }}
+                          color="#444444"
+                        />
+                      )}
+                      <Text style={styles.relationship_tex}>
+                        {currUser.status}
+                      </Text>
+                    </View>
+                  ) : null}
+                </View>
+              ) : null}
+
               <View
                 style={{
                   flexDirection: "row",
@@ -214,8 +217,16 @@ export default function Profile({ navigation }) {
                 </View>
                 <View style={[styles.flex_row, { marginLeft: 20 }]}>
                   {totalLikes >= 5 ? <StarFill /> : <StarOutline />}
-                  {totalLikes >= 25 ? <StarFill /> : <StarOutline />}
-                  {totalLikes >= 40 ? <StarFill /> : <StarOutline />}
+                  {totalLikes >= 25 ? (
+                    <StarFill color={colors.gradient_1} />
+                  ) : (
+                    <StarOutline />
+                  )}
+                  {totalLikes >= 40 ? (
+                    <StarFill color={colors.gradient_2} />
+                  ) : (
+                    <StarOutline />
+                  )}
                 </View>
               </View>
             </View>
@@ -255,7 +266,6 @@ export default function Profile({ navigation }) {
         <ActivityIndicator color={colors.gradient_1} size={25} />
       )}
       <StatusBar style="auto" backgroundColor={colors.bg_light} />
-      {/* <BottomNavBar navigation={navigation} /> */}
     </View>
   );
 }

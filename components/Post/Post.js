@@ -15,7 +15,7 @@ import ImageAutoHeight from "react-native-image-auto-height";
 import { StarFill, StarOutline } from "./Star";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { useTheme } from "@react-navigation/native";
 
 export function Post(props) {
@@ -31,6 +31,39 @@ export function Post(props) {
     }
     setTemp(props.likes);
   }, []);
+
+  const setNotification = async (user, type) => {
+    if (type == "like" && currentuser.email != props.email) {
+      const docRef = doc(getFirestore(), "users", user);
+      const docSnap = await getDoc(docRef);
+      const data = docSnap.data();
+      if (data.notification) {
+        for (let i = 0; i < data.notification.length; i++) {
+          if (
+            data.notification[i].by == currentuser.username &&
+            data.notification[i].img == props.post_img
+          ) {
+            console.log(data.notification[i]);
+            return;
+          }
+        }
+        const newNotArr = [
+          ...docSnap.data().notification,
+          { type: "like", by: currentuser.username, img: props.post_img },
+        ];
+        await updateDoc(docRef, {
+          notification: newNotArr,
+        });
+      } else {
+        const newNotArr = [
+          { type: "like", by: currentuser.username, img: props.post_img },
+        ];
+        await updateDoc(docRef, {
+          notification: newNotArr,
+        });
+      }
+    }
+  };
 
   const updateLike = async (id, count, type) => {
     const db = getFirestore();
@@ -51,6 +84,7 @@ export function Post(props) {
             total_likes: newArr,
           },
         });
+        setNotification(props.email, "like");
       } else {
         const newArr = [...props.liked_by].filter(
           (e) => e !== currentuser.email
@@ -198,8 +232,12 @@ export function Post(props) {
           style={styles.post_interactions_cont}
         >
           {temp >= 2 ? <StarFill /> : <StarOutline />}
-          {temp >= 5 ? <StarFill /> : <StarOutline />}
-          {temp >= 10 ? <StarFill /> : <StarOutline />}
+          {temp >= 5 ? <StarFill color={colors.gradient_2} /> : <StarOutline />}
+          {temp >= 10 ? (
+            <StarFill color={colors.gradient_1} />
+          ) : (
+            <StarOutline />
+          )}
         </TouchableOpacity>
       </View>
     </View>

@@ -30,3 +30,11 @@ export const setCurrentuserPosts = (posts) => {
     });
   };
 };
+export const setInitialLoadContex = (bool) => {
+  return (dispatch) => {
+    dispatch({
+      type: "initialLoad",
+      payload: bool,
+    });
+  };
+};

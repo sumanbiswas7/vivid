@@ -11,7 +11,6 @@ import { bindActionCreators } from "redux";
 export function HeaderTop({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
   const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
-
   return (
     <>
       <HomeModal navigation={navigation} />
@@ -20,8 +19,12 @@ export function HeaderTop({ navigation }) {
           <VividText size={32} />
         </View>
         <View style={styles.notification_img_container}>
-          <TouchableOpacity>
-            <Notification notification_count={""} />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("notifications")}
+          >
+            <Notification
+              notification_count={currentuser.notification?.length}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => toggleModal({ camera: false, home: true })}

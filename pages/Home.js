@@ -26,15 +26,19 @@ import { HeaderTop } from "../components/Header/HeaderTop";
 import { Post } from "../components/Post/Post";
 import moment from "moment";
 import { StatusBar as ESB } from "expo-status-bar";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export default function Home({ navigation }) {
+  const tabBarHeight = useBottomTabBarHeight();
   const [initialLoad, setInitialLoad] = useState(false);
   const [postLoad, setPostLoad] = useState(false);
   const [currPostsload, setCurrPostLoad] = useState(false);
-  const { setCurrentuserPosts, setCurrentUser, setPosts } = bindActionCreators(
-    actionCreators,
-    useDispatch()
-  );
+  const {
+    setCurrentuserPosts,
+    setCurrentUser,
+    setPosts,
+    setInitialLoadContex,
+  } = bindActionCreators(actionCreators, useDispatch());
   const posts = useSelector((state) => state.posts);
   const currUser = useSelector((state) => state.currentuser);
   const auth = getAuth();
@@ -60,7 +64,7 @@ export default function Home({ navigation }) {
     const db = getFirestore();
     const postRef = collection(db, "posts");
     const querySnapshot = await getDocs(
-      query(postRef, orderBy("date", "desc"), limit(100))
+      query(postRef, orderBy("date", "desc"), limit(40))
     );
     const POSTS = [];
     querySnapshot.forEach((doc) => {
@@ -100,13 +104,22 @@ export default function Home({ navigation }) {
   useEffect(() => {
     if (postLoad && initialLoad) {
       setCurrentuserPost(currUser, posts);
+      setInitialLoadContex(true);
     }
   }, [postLoad, initialLoad]);
 
   return (
     <>
       {initialLoad && postLoad && currPostsload ? (
-        <View style={[styles.container, { backgroundColor: colors.bg_light }]}>
+        <View
+          style={[
+            styles.container,
+            {
+              backgroundColor: colors.bg_light,
+              marginBottom: tabBarHeight,
+            },
+          ]}
+        >
           <HeaderTop navigation={navigation} />
           <View style={[{ color: colors.primary }, styles.view]}>
             <FlatList
@@ -151,8 +164,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   posts_list: {
-    marginTop: StatusBar.currentHeight + 60,
-    // marginBottom: 55,
+    marginTop: StatusBar.currentHeight + 55,
+    paddingTop: 5,
     // backgroundColor: "#d2d",
   },
 });

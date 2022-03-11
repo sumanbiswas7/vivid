@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "./state/store";
 import { NavigationContainer } from "@react-navigation/native";
@@ -16,6 +15,10 @@ import OtherProfile from "./pages/OtherProfile";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useTheme } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import MaskedView from "@react-native-masked-view/masked-view";
+import { LinearGradient } from "expo-linear-gradient";
+import { Notifications } from "./pages/Notifications";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,9 +27,11 @@ function BottomTabNav() {
   return (
     <Tab.Navigator
       initialRouteName="Feed"
+      sceneContainerStyle={{}}
       screenOptions={{
-        tabBarActiveTintColor: "#e91e63",
+        tabBarActiveTintColor: colors.bottom_tab,
         headerShown: false,
+        tabBarStyle: { position: "absolute", backgroundColor: colors.bg_light },
       }}
     >
       <Tab.Screen
@@ -34,18 +39,31 @@ function BottomTabNav() {
         component={Home}
         options={{
           tabBarLabel: "Home",
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <FontAwesome name="home" color={color} size={size} />
           ),
         }}
       />
       <Tab.Screen
-        name="Notifications"
+        name="AddPost"
+        component={CreatePost}
+        options={{
+          tabBarLabel: "Add Post",
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="plus-circle" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
         component={Profile}
         options={{
-          tabBarLabel: "Updates",
+          tabBarLabel: "Profile",
+          tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <FontAwesome name="user" color={color} size={size} />
           ),
         }}
       />
@@ -73,11 +91,8 @@ export default function App() {
           <Stack.Screen name="likes" component={Likes} />
           <Stack.Screen name="comments" component={Comments} />
           <Stack.Screen name="otherprofile" component={OtherProfile} />
-          <Stack.Screen
-            screenOptions={{ headerShown: true }}
-            name="editprofile"
-            component={EditProfile}
-          />
+          <Stack.Screen name="editprofile" component={EditProfile} />
+          <Stack.Screen name="notifications" component={Notifications} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

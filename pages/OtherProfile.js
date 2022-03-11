@@ -79,7 +79,7 @@ export default function OtherProfile({ navigation, route }) {
   const DUMMY_TAGS = [
     {
       title: "Tags",
-      data: currUser.tags,
+      data: currUser.tags || [],
     },
   ];
 
@@ -247,14 +247,21 @@ export default function OtherProfile({ navigation, route }) {
                 </View>
                 <View style={[styles.flex_row, { marginLeft: 20 }]}>
                   {totalLikes >= 5 ? <StarFill /> : <StarOutline />}
-                  {totalLikes >= 25 ? <StarFill /> : <StarOutline />}
-                  {totalLikes >= 40 ? <StarFill /> : <StarOutline />}
+                  {totalLikes >= 25 ? (
+                    <StarFill color={colors.gradient_2} />
+                  ) : (
+                    <StarOutline />
+                  )}
+                  {totalLikes >= 40 ? (
+                    <StarFill color={colors.gradient_1} />
+                  ) : (
+                    <StarOutline />
+                  )}
                 </View>
               </View>
             </View>
             {curUserPosts.length > 0 ? (
               <FlatList
-                style={{ marginBottom: 50 }}
                 showsVerticalScrollIndicator={false}
                 data={curUserPosts}
                 renderItem={({ item }) => {
@@ -288,7 +295,6 @@ export default function OtherProfile({ navigation, route }) {
         <ActivityIndicator color={colors.gradient_1} size={25} />
       )}
       <StatusBar style="auto" backgroundColor={colors.bg_light} />
-      <BottomNavBar navigation={navigation} />
     </View>
   );
 }

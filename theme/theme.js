@@ -29,6 +29,7 @@ const theme2 = {
     modal: "#3F5EFB",
     bg_light: "#fff",
     bg_dark: "#ebebeb",
+    bottom_tab: "#FC466B",
   },
 };
 
