@@ -196,7 +196,7 @@ export default function SignUp({ navigation }) {
   return (
     <>
       {fontLoaded ? (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.bg_light }]}>
           <ImageModal handleClick={handleChooseImageClick} />
           {/* Image Choosing Box */}
           <TouchableOpacity
@@ -236,21 +236,33 @@ export default function SignUp({ navigation }) {
           </TouchableOpacity>
           <TextInput
             onChangeText={(t) => setUserInput((p) => ({ ...p, fullname: t }))}
-            style={styles.input}
             placeholder="full-name"
+            style={[
+              styles.input,
+              { color: colors.text, borderBottomColor: colors.accent },
+            ]}
+            placeholderTextColor={colors.text}
           />
           <TextInput
             onChangeText={(t) => setUserInput((p) => ({ ...p, username: t }))}
-            style={styles.input}
             placeholder="username"
+            style={[
+              styles.input,
+              { color: colors.text, borderBottomColor: colors.accent },
+            ]}
+            placeholderTextColor={colors.text}
           />
           <TextInput
             onChangeText={(t) => setUserInput((p) => ({ ...p, city: t }))}
-            style={[styles.city_input, styles.input]}
+            style={[
+              styles.input,
+              styles.city_input,
+              { color: colors.text, borderBottomColor: colors.accent },
+            ]}
+            placeholderTextColor={colors.text}
             placeholder="city"
           />
           <TextInput
-            style={styles.input}
             onChangeText={(t) =>
               setUserInput((p) => ({
                 ...p,
@@ -260,12 +272,21 @@ export default function SignUp({ navigation }) {
             placeholder="email"
             keyboardType="email-address"
             autoCapitalize="none"
+            style={[
+              styles.input,
+              { color: colors.text, borderBottomColor: colors.accent },
+            ]}
+            placeholderTextColor={colors.text}
           />
           <TextInput
             secureTextEntry={true}
-            style={styles.input}
             onChangeText={(t) => setUserInput((p) => ({ ...p, password: t }))}
             placeholder="create password"
+            style={[
+              styles.input,
+              { color: colors.text, borderBottomColor: colors.accent },
+            ]}
+            placeholderTextColor={colors.text}
           />
           {errText ? (
             <Text style={styles.err_text}>{errText.slice(10)}</Text>
@@ -290,7 +311,7 @@ export default function SignUp({ navigation }) {
             </LinearGradient>
           </TouchableOpacity>
           <>
-            <Text>
+            <Text style={{ color: colors.text }}>
               Already have an account?
               <Text
                 onPress={() => navigation.navigate("login")}

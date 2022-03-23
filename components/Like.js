@@ -11,6 +11,7 @@ import { CircleLoader } from "./CircleLoader";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { UserImg } from "./Post/UserImg";
 import { useTheme } from "@react-navigation/native";
+import { VerifiedText } from "./Post/VerifiedText";
 
 export function Like({ liked_by, onLoad, navigation }) {
   const { colors } = useTheme();
@@ -47,7 +48,13 @@ export function Like({ liked_by, onLoad, navigation }) {
               navigation.navigate("otherprofile", { email: user.email })
             }
           >
-            <Text style={styles.username}>{user.username}</Text>
+            <VerifiedText
+              style={[styles.username, { color: colors.text }]}
+              text={user.username}
+              isVerified={user.isVerified}
+              marleft={10}
+              color={colors.text}
+            />
           </TouchableOpacity>
         </View>
       ) : (

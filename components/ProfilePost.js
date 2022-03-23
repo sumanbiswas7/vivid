@@ -23,8 +23,15 @@ export function ProfilePost({
             <View style={styles.profile_name_container}>
               <UserImg profile_img={userProfile} />
               <View style={styles.name_time_text_container}>
-                <VerifiedText isVerified={false} text={userName} size={14} />
-                <Text style={styles.time}>{date}</Text>
+                <VerifiedText
+                  isVerified={false}
+                  text={userName}
+                  size={14}
+                  color={colors.text}
+                />
+                <Text style={[styles.time, { color: colors.text }]}>
+                  {date}
+                </Text>
               </View>
             </View>
           </View>
@@ -37,7 +44,7 @@ export function ProfilePost({
             colors={["transparent", "rgba(0,0,0,0.5)"]}
           >
             <AntDesign name="like1" color={"#fff"} size={15} />
-            <Text style={styles.like_text}>{likes}</Text>
+            <Text style={[styles.like_text, { color: "#fff" }]}>{likes}</Text>
           </LinearGradient>
         </>
       ) : (
@@ -46,17 +53,31 @@ export function ProfilePost({
             <View style={styles.profile_name_container}>
               <UserImg profile_img={userProfile} />
               <View style={styles.name_time_text_container}>
-                <VerifiedText isVerified={false} text={userName} size={14} />
-                <Text style={styles.time}>{date}</Text>
+                <VerifiedText
+                  isVerified={false}
+                  text={userName}
+                  size={14}
+                  color={colors.text}
+                />
+                <Text style={[styles.time, { color: colors.text }]}>
+                  {date}
+                </Text>
               </View>
             </View>
           </View>
-          <Text style={[styles.caption, { backgroundColor: colors.bg_light }]}>
+          <Text
+            style={[
+              styles.caption,
+              { backgroundColor: colors.bg_light, color: colors.text },
+            ]}
+          >
             {caption}
           </Text>
           <View style={[styles.footer_2, { backgroundColor: colors.bg_light }]}>
-            <AntDesign name="like1" color={"#000"} size={15} />
-            <Text style={[styles.like_text, { color: "#000" }]}>{likes}</Text>
+            <AntDesign name="like1" color={colors.text} size={15} />
+            <Text style={[styles.like_text, { color: colors.text }]}>
+              {likes}
+            </Text>
           </View>
         </View>
       )}

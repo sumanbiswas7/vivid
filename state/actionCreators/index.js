@@ -38,3 +38,11 @@ export const setInitialLoadContex = (bool) => {
     });
   };
 };
+export const setTheme = (theme) => {
+  return (dispatch) => {
+    dispatch({
+      type: "theme",
+      payload: theme,
+    });
+  };
+};

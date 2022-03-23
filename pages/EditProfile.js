@@ -207,9 +207,16 @@ export function EditProfile({ navigation }) {
             disabled={updating}
             onPress={() => navigation.navigate("home")}
           >
-            <AntDesign name="back" size={22} style={{ marginRight: 10 }} />
+            <AntDesign
+              name="back"
+              color={colors.text}
+              size={22}
+              style={{ marginRight: 10 }}
+            />
           </TouchableOpacity>
-          <Text style={styles.text}>Edit Profile</Text>
+          <Text style={[styles.text, { color: colors.text }]}>
+            Edit Profile
+          </Text>
         </View>
         <TouchableOpacity disabled={updating} onPress={handleEditSubmit}>
           <MaskedView
@@ -246,44 +253,57 @@ export function EditProfile({ navigation }) {
               alignSelf: "center",
               fontFamily: "Comfortaa-Medium",
               marginBottom: 15,
+              color: colors.text,
             }}
           >
             profile picture
           </Text>
           <View style={styles.flex}>
-            <Text style={styles.input_title}>full name</Text>
+            <Text style={[styles.input_title, { color: colors.text }]}>
+              full name
+            </Text>
             <TextInput
               onChangeText={(t) => setFullName(t)}
               style={styles.input}
               placeholder="your name"
               defaultValue={currentuser.fullname}
+              color={colors.text}
             />
           </View>
           <View style={styles.flex}>
-            <Text style={styles.input_title}>username</Text>
+            <Text style={[styles.input_title, { color: colors.text }]}>
+              username
+            </Text>
             <TextInput
               onChangeText={(t) => setUserName(t)}
               style={styles.input}
               placeholder="username"
               defaultValue={currentuser.username}
+              color={colors.text}
             />
           </View>
           <View style={styles.flex}>
-            <Text style={styles.input_title}>city</Text>
+            <Text style={[styles.input_title, { color: colors.text }]}>
+              city
+            </Text>
             <TextInput
               onChangeText={(t) => setCity(t)}
               style={styles.input}
               placeholder="city"
               defaultValue={currentuser.city}
+              color={colors.text}
             />
           </View>
           <View style={styles.flex}>
-            <Text style={styles.input_title}>bio</Text>
+            <Text style={[styles.input_title, { color: colors.text }]}>
+              bio
+            </Text>
             <TextInput
               onChangeText={(t) => setBio(t)}
               style={styles.input}
               placeholder="bio"
               defaultValue={currentuser.bio}
+              color={colors.text}
             />
           </View>
           <View
@@ -295,7 +315,9 @@ export function EditProfile({ navigation }) {
               },
             ]}
           >
-            <Text style={styles.input_title}>tags</Text>
+            <Text style={[styles.input_title, { color: colors.text }]}>
+              tags
+            </Text>
             <View style={styles.tag_container}>
               <TagInput
                 updateState={setTags}
@@ -315,13 +337,15 @@ export function EditProfile({ navigation }) {
               },
             ]}
           >
-            <Text style={styles.input_title}>gender</Text>
+            <Text style={[styles.input_title, { color: colors.text }]}>
+              gender
+            </Text>
             <Picker
               selectedValue={currentuser.gender}
               style={{
                 height: 50,
                 width: 100,
-                color: "#000",
+                color: colors.text,
               }}
               onValueChange={(itemValue, itemIndex) => {
                 setGender(itemValue);
@@ -340,13 +364,15 @@ export function EditProfile({ navigation }) {
               },
             ]}
           >
-            <Text style={styles.input_title}>i am</Text>
+            <Text style={[styles.input_title, { color: colors.text }]}>
+              i am
+            </Text>
             <Picker
               selectedValue={currentuser.status || ""}
               style={{
                 height: 50,
                 width: 150,
-                color: "#000",
+                color: colors.text,
               }}
               onValueChange={(itemValue, itemIndex) => {
                 setStatus(itemValue);
@@ -358,12 +384,18 @@ export function EditProfile({ navigation }) {
             </Picker>
           </View>
           <View style={styles.flex}>
-            <AntDesign style={styles.input_title} name="instagram" size={20} />
+            <AntDesign
+              style={styles.input_title}
+              name="instagram"
+              size={20}
+              color={colors.text}
+            />
             <TextInput
               onChangeText={(t) => setIg(t)}
               style={styles.input}
               defaultValue={currentuser.ig_link}
               placeholder="instagram handle"
+              color={colors.text}
             />
           </View>
           <View style={styles.flex}>
@@ -371,21 +403,29 @@ export function EditProfile({ navigation }) {
               style={styles.input_title}
               name="facebook-square"
               size={20}
+              color={colors.text}
             />
             <TextInput
               onChangeText={(t) => setFb(t)}
               style={styles.input}
               placeholder="facebook handle"
               defaultValue={currentuser.fb_link}
+              color={colors.text}
             />
           </View>
           <View style={styles.flex}>
-            <AntDesign style={styles.input_title} name="github" size={20} />
+            <AntDesign
+              style={styles.input_title}
+              name="github"
+              size={20}
+              color={colors.text}
+            />
             <TextInput
               onChangeText={(t) => setGit(t)}
               style={styles.input}
               placeholder="github handle"
               defaultValue={currentuser.git_link}
+              color={colors.text}
             />
           </View>
         </ScrollView>

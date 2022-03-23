@@ -105,17 +105,23 @@ export function Post(props) {
   return (
     <View>
       <Modal animationType="slide" transparent visible={reportModal}>
-        <View style={styles.report_view}>
-          <Text style={styles.report_text}>Report this post?</Text>
+        <View style={[styles.report_view, { backgroundColor: colors.home_fg }]}>
+          <Text style={[styles.report_text, { color: colors.text }]}>
+            Report this post?
+          </Text>
           <TouchableOpacity onPress={() => setReportModal(false)}>
-            <Text style={styles.report_btn}>REPORT</Text>
+            <Text style={[styles.report_btn, { color: colors.text }]}>
+              REPORT
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setReportModal(false)}>
-            <Text style={styles.report_btn}>CANCEL</Text>
+            <Text style={[styles.report_btn, { color: colors.text }]}>
+              CANCEL
+            </Text>
           </TouchableOpacity>
         </View>
       </Modal>
-      <View style={[styles.header, { backgroundColor: colors.bg_dark }]}>
+      <View style={[styles.header, { backgroundColor: colors.home_fg }]}>
         <TouchableOpacity
           onPress={() =>
             props.navigation.navigate("otherprofile", { email: props.email })
@@ -128,8 +134,11 @@ export function Post(props) {
                 isVerified={props.isVerified}
                 text={props.username}
                 size={14}
+                color={colors.text}
               />
-              <Text style={styles.time}>{props.date}</Text>
+              <Text style={[styles.time, { color: colors.text }]}>
+                {props.date}
+              </Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -139,11 +148,16 @@ export function Post(props) {
           }}
           style={styles.other_btn}
         >
-          <Entypo name="dots-three-vertical" size={15} />
+          <Entypo color={colors.text} name="dots-three-vertical" size={15} />
         </TouchableOpacity>
       </View>
       {props.caption ? (
-        <Text style={[styles.caption, { backgroundColor: colors.bg_dark }]}>
+        <Text
+          style={[
+            styles.caption,
+            { backgroundColor: colors.home_fg, color: colors.text },
+          ]}
+        >
           {props.caption}
         </Text>
       ) : null}
@@ -153,7 +167,7 @@ export function Post(props) {
           source={{ uri: props.post_img }}
         />
       ) : null}
-      <View style={[styles.footer, { backgroundColor: colors.bg_dark }]}>
+      <View style={[styles.footer, { backgroundColor: colors.home_fg }]}>
         <View style={styles.post_interactions_cont}>
           {liketemp ? (
             <TouchableOpacity
@@ -164,7 +178,7 @@ export function Post(props) {
                 updateLike(props.id, temp - 1, "min");
               }}
             >
-              <AntDesign name="like1" size={18} color={"#000"} />
+              <AntDesign name="like1" size={18} color={colors.text} />
             </TouchableOpacity>
           ) : (
             <>
@@ -176,7 +190,7 @@ export function Post(props) {
                   updateLike(props.id, temp + 1, "plus");
                 }}
               >
-                <AntDesign name="like2" size={18} color={"#000"} />
+                <AntDesign name="like2" size={18} color={colors.text} />
               </TouchableOpacity>
             </>
           )}
@@ -187,7 +201,9 @@ export function Post(props) {
               }
               style={styles.like_text}
             >
-              <Text style={styles.post_interactions_text}>
+              <Text
+                style={[styles.post_interactions_text, { color: colors.text }]}
+              >
                 {temp} Like&nbsp;&nbsp;
               </Text>
             </TouchableOpacity>
@@ -198,7 +214,11 @@ export function Post(props) {
               }
               style={styles.like_text}
             >
-              <Text style={styles.post_interactions_text}>{temp} Likes</Text>
+              <Text
+                style={[styles.post_interactions_text, { color: colors.text }]}
+              >
+                {temp} Likes
+              </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -207,6 +227,8 @@ export function Post(props) {
             props.navigation.navigate("comments", {
               postId: props.id,
               comments: props.comments.reverse(),
+              postImg: props.post_img,
+              userId: props.email,
             })
           }
           style={[styles.post_interactions_cont]}
@@ -214,15 +236,25 @@ export function Post(props) {
           <MaterialCommunityIcons
             name="comment-processing-outline"
             size={18}
-            color={"#000"}
+            color={colors.text}
             style={{ marginTop: 7 }}
           />
           {props.comments.length == 1 ? (
-            <Text style={[styles.post_interactions_text, { marginLeft: 5 }]}>
+            <Text
+              style={[
+                styles.post_interactions_text,
+                { marginLeft: 5, color: colors.text },
+              ]}
+            >
               {props.comments.length} Comment
             </Text>
           ) : (
-            <Text style={[styles.post_interactions_text, { marginLeft: 5 }]}>
+            <Text
+              style={[
+                styles.post_interactions_text,
+                { marginLeft: 5, color: colors.text },
+              ]}
+            >
               {props.comments.length} Comments&nbsp;&nbsp;
             </Text>
           )}
@@ -231,12 +263,20 @@ export function Post(props) {
           activeOpacity={1}
           style={styles.post_interactions_cont}
         >
-          {temp >= 2 ? <StarFill /> : <StarOutline />}
-          {temp >= 5 ? <StarFill color={colors.gradient_2} /> : <StarOutline />}
+          {temp >= 2 ? (
+            <StarFill color={colors.text} />
+          ) : (
+            <StarOutline color={colors.text} />
+          )}
+          {temp >= 8 ? (
+            <StarFill color={colors.gradient_2} />
+          ) : (
+            <StarOutline color={colors.text} />
+          )}
           {temp >= 10 ? (
             <StarFill color={colors.gradient_1} />
           ) : (
-            <StarOutline />
+            <StarOutline color={colors.text} />
           )}
         </TouchableOpacity>
       </View>

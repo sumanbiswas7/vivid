@@ -42,7 +42,6 @@ export default function Profile({ navigation }) {
       setIsLoaded(true);
     }
   }, [curUserPosts]);
-  console.log(initialLoadContex);
   const { colors } = useTheme();
   const DUMMY_TAGS = [
     {
@@ -54,7 +53,7 @@ export default function Profile({ navigation }) {
     <View style={[styles.container, { backgroundColor: colors.bg_dark }]}>
       {isLoaded && initialLoadContex ? (
         <>
-          <View style={[styles.header, { backgroundColor: colors.bg_light }]}>
+          <View style={[styles.header, { backgroundColor: colors.home_fg }]}>
             <View
               style={{
                 flexDirection: "row",
@@ -63,11 +62,13 @@ export default function Profile({ navigation }) {
               }}
             >
               <TouchableOpacity onPress={() => navigation.goBack()}>
-                <AntDesign name="back" size={22} />
+                <AntDesign name="back" size={22} color={colors.text} />
               </TouchableOpacity>
-              <Text style={styles.header_text}>{currUser.username}</Text>
+              <Text style={[styles.header_text, { color: colors.text }]}>
+                {currUser.username}
+              </Text>
             </View>
-            <Entypo name="dots-three-vertical" size={15} />
+            <Entypo name="dots-three-vertical" size={15} color={colors.text} />
           </View>
           <ScrollView
             contentContainerStyle={{
@@ -93,10 +94,13 @@ export default function Profile({ navigation }) {
                 isVerified={currUser.isVerified}
                 size={25}
                 marleft={10}
+                color={colors.text}
               />
               {currUser.gender || currUser.status ? (
                 <View style={styles.flex_row}>
-                  <Text style={styles.gender}>{currUser.gender}</Text>
+                  <Text style={[styles.gender, { color: colors.text }]}>
+                    {currUser.gender}
+                  </Text>
                   {currUser.status ? (
                     <View style={[styles.flex_row]}>
                       {currUser.status == "single" ? (
@@ -104,17 +108,22 @@ export default function Profile({ navigation }) {
                           name="heart-broken"
                           size={17}
                           style={{ marginTop: 3 }}
-                          color="#444444"
+                          color={colors.text}
                         />
                       ) : (
                         <MaterialCommunityIcons
                           name="heart"
                           size={17}
                           style={{ marginTop: 3 }}
-                          color="#444444"
+                          color={colors.text}
                         />
                       )}
-                      <Text style={styles.relationship_tex}>
+                      <Text
+                        style={[
+                          styles.relationship_tex,
+                          { color: colors.text },
+                        ]}
+                      >
                         {currUser.status}
                       </Text>
                     </View>
@@ -140,7 +149,7 @@ export default function Profile({ navigation }) {
                         <MaskedView
                           style={styles.mask}
                           maskElement={
-                            <Text style={[{ fontSize: 15 }, styles.text]}>
+                            <Text style={[styles.text, { fontSize: 15 }]}>
                               {item}
                             </Text>
                           }
@@ -157,7 +166,9 @@ export default function Profile({ navigation }) {
                 </SafeAreaView>
               </View>
               {currUser.bio ? (
-                <Text style={styles.passion}>{currUser.bio}</Text>
+                <Text style={[styles.passion, { color: colors.text }]}>
+                  {currUser.bio}
+                </Text>
               ) : null}
               {currUser.ig_link || currUser.git_link || currUser.fb_link ? (
                 <View style={[styles.flex_row, { marginTop: 10 }]}>
@@ -173,6 +184,7 @@ export default function Profile({ navigation }) {
                         style={{ marginHorizontal: 8 }}
                         name="instagram"
                         size={20}
+                        color={colors.text}
                       />
                     </TouchableOpacity>
                   ) : null}
@@ -188,6 +200,7 @@ export default function Profile({ navigation }) {
                         style={{ marginHorizontal: 8 }}
                         name="github"
                         size={20}
+                        color={colors.text}
                       />
                     </TouchableOpacity>
                   ) : null}
@@ -203,6 +216,7 @@ export default function Profile({ navigation }) {
                         style={{ marginHorizontal: 8 }}
                         name="facebook-square"
                         size={20}
+                        color={colors.text}
                       />
                     </TouchableOpacity>
                   ) : null}
@@ -210,22 +224,31 @@ export default function Profile({ navigation }) {
               ) : null}
               <View style={[styles.flex_row, { marginTop: 10 }]}>
                 <View style={[styles.flex_row, { marginBottom: 2 }]}>
-                  <AntDesign name="like1" size={17} />
-                  <Text style={[styles.text, { fontSize: 13, marginLeft: 4 }]}>
+                  <AntDesign name="like1" size={17} color={colors.text} />
+                  <Text
+                    style={[
+                      styles.text,
+                      { fontSize: 13, marginLeft: 4, color: colors.text },
+                    ]}
+                  >
                     {totalLikes}
                   </Text>
                 </View>
                 <View style={[styles.flex_row, { marginLeft: 20 }]}>
-                  {totalLikes >= 5 ? <StarFill /> : <StarOutline />}
+                  {totalLikes >= 5 ? (
+                    <StarFill color={colors.text} />
+                  ) : (
+                    <StarOutline color={colors.text} />
+                  )}
                   {totalLikes >= 25 ? (
                     <StarFill color={colors.gradient_1} />
                   ) : (
-                    <StarOutline />
+                    <StarOutline color={colors.text} />
                   )}
                   {totalLikes >= 40 ? (
                     <StarFill color={colors.gradient_2} />
                   ) : (
-                    <StarOutline />
+                    <StarOutline color={colors.text} />
                   )}
                 </View>
               </View>
@@ -265,7 +288,7 @@ export default function Profile({ navigation }) {
       ) : (
         <ActivityIndicator color={colors.gradient_1} size={25} />
       )}
-      <StatusBar style="auto" backgroundColor={colors.bg_light} />
+      {/* <StatusBar style="auto" backgroundColor={"#d2d"} /> */}
     </View>
   );
 }

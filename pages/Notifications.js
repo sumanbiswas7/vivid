@@ -12,10 +12,11 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import { useTheme } from "@react-navigation/native";
 
 export function Notifications({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
-
+  const { colors } = useTheme();
   async function clearNotification(email) {
     const userRef = doc(getFirestore(), "users", email);
     await updateDoc(userRef, {
@@ -26,13 +27,15 @@ export function Notifications({ navigation }) {
     clearNotification(currentuser.email);
   }, []);
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: colors.home_bg }]}>
+      <View style={[styles.header, { backgroundColor: colors.home_fg }]}>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <AntDesign size={22} name="back" />
+            <AntDesign size={22} name="back" color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.text}>Notifications</Text>
+          <Text style={[styles.text, { color: colors.text }]}>
+            Notifications
+          </Text>
         </View>
       </View>
       <FlatList
@@ -46,8 +49,9 @@ export function Notifications({ navigation }) {
                   {item.by} has {item.type}d your post
                 </Text>
               ) : (
-                <Text>
-                  {item.by} has {item.type}ed on your post
+                <Text style={styles.not_text}>
+                  {item.by} has {item.type}ed &quot;{item.comment}&quot; on your
+                  post
                 </Text>
               )}
               <Image source={{ uri: item.img }} style={styles.not_img} />
@@ -103,6 +107,7 @@ const styles = StyleSheet.create({
   },
   not_text: {
     fontFamily: "Comfortaa-Medium",
+    width: Dimensions.get("window").width - 100,
   },
   not_img: {
     width: 50,

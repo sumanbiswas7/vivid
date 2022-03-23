@@ -12,7 +12,7 @@ import {
   ToastAndroid,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,11 +22,50 @@ import moment from "moment";
 
 export function Comments({ route, navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
-  const { comments, postId } = route.params;
+  const { comments, userId, postImg, postId } = route.params;
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const { colors } = useTheme();
 
+  const setNotification = async (user, type) => {
+    if (type == "comment" && currentuser.email != userId) {
+      const docRef = doc(getFirestore(), "users", user);
+      const docSnap = await getDoc(docRef);
+      const data = docSnap.data();
+      if (data.notification) {
+        for (let i = 0; i < data.notification.length; i++) {
+          if (data.notification[i].by == userId) {
+            console.log(data.notification[i]);
+            return;
+          }
+        }
+        const newNotArr = [
+          ...docSnap.data().notification,
+          {
+            type: "comment",
+            by: currentuser.username,
+            img: postImg,
+            comment: input,
+          },
+        ];
+        await updateDoc(docRef, {
+          notification: newNotArr,
+        });
+      } else {
+        const newNotArr = [
+          {
+            type: "comment",
+            by: currentuser.username,
+            img: postImg,
+            comment: input,
+          },
+        ];
+        await updateDoc(docRef, {
+          notification: newNotArr,
+        });
+      }
+    }
+  };
   const handleCommentSubmit = async (e) => {
     if (input.length >= 1) {
       setIsSending(true);
@@ -43,6 +82,7 @@ export function Comments({ route, navigation }) {
         ],
       }).then(() => {
         setIsSending(false);
+        setNotification(userId, "comment");
         setInput("");
         ToastAndroid.show("Comment posted", ToastAndroid.SHORT);
         setTimeout(() => {
@@ -53,16 +93,16 @@ export function Comments({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: colors.home_bg }]}>
+      <View style={[styles.header, { backgroundColor: colors.home_fg }]}>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <AntDesign size={22} name="back" />
+            <AntDesign size={22} name="back" color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.text}>Comments</Text>
+          <Text style={[styles.text, { color: colors.text }]}>Comments</Text>
         </View>
       </View>
-      <View style={styles.main}>
+      <View style={[styles.main, { backgroundColor: colors.home_bg }]}>
         <FlatList
           data={comments}
           showsVerticalScrollIndicator={false}
@@ -77,7 +117,7 @@ export function Comments({ route, navigation }) {
           value={input}
           onChangeText={(t) => setInput(t)}
           autoFocus
-          style={styles.input}
+          style={[styles.input, { backgroundColor: colors.home_fg }]}
         ></TextInput>
         <LinearGradient
           start={{ x: 0.9, y: 0.2 }}

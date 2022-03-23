@@ -9,13 +9,13 @@ export function StarFill({ color }) {
     />
   );
 }
-export function StarOutline() {
+export function StarOutline({ color }) {
   return (
     <FontAwesome
       style={{ marginRight: 3 }}
       name="star-o"
       size={15}
-      color={"#000"}
+      color={color || "#000"}
     />
   );
 }

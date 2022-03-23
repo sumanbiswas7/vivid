@@ -8,13 +8,16 @@ import { HomeModal } from "../HomeModal";
 import { actionCreators } from "../../state";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
+import { useTheme } from "@react-navigation/native";
+
 export function HeaderTop({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
   const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
+  const { colors } = useTheme();
   return (
     <>
       <HomeModal navigation={navigation} />
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.home_fg }]}>
         <View style={{ marginTop: 15 }}>
           <VividText size={32} />
         </View>
@@ -32,7 +35,7 @@ export function HeaderTop({ navigation }) {
             <UserImg size={35} profile_img={currentuser.profile} />
           </TouchableOpacity>
         </View>
-        <StatusBar style="auto" backgroundColor="#fff" />
+        {/* <StatusBar style="auto" backgroundColor="#fff" /> */}
       </View>
     </>
   );

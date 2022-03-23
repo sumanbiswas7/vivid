@@ -37,6 +37,7 @@ export function VerifiedText(props) {
             {
               fontSize: props.size,
               color: props.color || "#000",
+              marginLeft: props.marleft || 0,
             },
           ]}
         >

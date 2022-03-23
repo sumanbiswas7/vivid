@@ -42,7 +42,7 @@ export default function Home({ navigation }) {
   const posts = useSelector((state) => state.posts);
   const currUser = useSelector((state) => state.currentuser);
   const auth = getAuth();
-  const { colors } = useTheme();
+  const { colors, type } = useTheme();
 
   const loadAndSetCurrUser = async () => {
     try {
@@ -82,7 +82,7 @@ export default function Home({ navigation }) {
         filteredPost.push(res[0]);
       }
     }
-    setCurrentuserPosts(filteredPost);
+    setCurrentuserPosts(filteredPost.reverse());
     setCurrPostLoad(true);
     console.log("CURRUSER POST LOADED");
   };
@@ -115,7 +115,7 @@ export default function Home({ navigation }) {
           style={[
             styles.container,
             {
-              backgroundColor: colors.bg_light,
+              backgroundColor: colors.home_bg,
               marginBottom: tabBarHeight,
             },
           ]}
@@ -146,12 +146,15 @@ export default function Home({ navigation }) {
               }}
             />
           </View>
-          {/* <BottomNavBar navigation={navigation} /> */}
+          {type == "dark" ? (
+            <ESB style="light" backgroundColor={colors.home_fg} />
+          ) : (
+            <ESB style="dark" backgroundColor={colors.home_fg} />
+          )}
         </View>
       ) : (
         <CircleLoader size={20} />
       )}
-      <ESB style="auto" color={colors.bg_light} />
     </>
   );
 }

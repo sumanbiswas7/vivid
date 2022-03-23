@@ -44,8 +44,12 @@ export function Comment({ comment_data, navigation }) {
           >
             <UserImg profile_img={user.profile} />
             <View style={{ marginLeft: 5, alignItems: "flex-start" }}>
-              <VerifiedText text={user.username} isVerified={user.isVerified} />
-              <Text style={styles.time}>
+              <VerifiedText
+                text={user.username}
+                isVerified={user.isVerified}
+                color={colors.text}
+              />
+              <Text style={[styles.time, { color: colors.text }]}>
                 {moment(comment_data.time, "DD-MM-YYYY, h:mm a").fromNow()}
               </Text>
             </View>

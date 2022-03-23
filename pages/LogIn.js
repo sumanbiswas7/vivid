@@ -51,10 +51,14 @@ export default function LogIn({ navigation }) {
   return (
     <>
       {fontLoaded ? (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.bg_light }]}>
           <VividText size={50} />
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              { color: colors.text, borderBottomColor: colors.accent },
+            ]}
+            placeholderTextColor={colors.text}
             onChangeText={(t) =>
               setUserInput((p) => ({
                 ...p,
@@ -67,7 +71,11 @@ export default function LogIn({ navigation }) {
           />
           <TextInput
             secureTextEntry={true}
-            style={styles.input}
+            style={[
+              styles.input,
+              { color: colors.text, borderBottomColor: colors.accent },
+            ]}
+            placeholderTextColor={colors.text}
             onChangeText={(t) => setUserInput((p) => ({ ...p, password: t }))}
             placeholder="password"
           />
@@ -94,7 +102,7 @@ export default function LogIn({ navigation }) {
             </LinearGradient>
           </TouchableOpacity>
           <>
-            <Text>
+            <Text style={{ color: colors.text }}>
               Don't have an account?
               <Text
                 onPress={() => navigation.replace("signup")}

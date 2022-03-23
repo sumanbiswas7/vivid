@@ -18,6 +18,7 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Foundation from "react-native-vector-icons/Foundation";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { onAuthStateChanged, getAuth, signOut } from "firebase/auth";
 import { useState } from "react";
 
@@ -69,7 +70,7 @@ export function HomeModal({ navigation }) {
         visible={modalVisible.home}
       >
         <View style={styles.modal_view}>
-          <View style={styles.modal}>
+          <View style={[styles.modal, { backgroundColor: colors.home_fg }]}>
             <TouchableOpacity
               style={styles.header}
               onPress={() => toggleModal({ camera: false, home: false })}
@@ -78,16 +79,22 @@ export function HomeModal({ navigation }) {
                 style={{ marginRight: 15 }}
                 name="closecircleo"
                 size={20}
+                color={colors.text}
               />
             </TouchableOpacity>
-            <View style={styles.header_view}>
+            <View
+              style={[styles.header_view, { borderBottomColor: colors.accent }]}
+            >
               <UserImg size={55} profile_img={currentuser.profile} />
               <VerifiedText
                 isVerified={currentuser.isVerified}
                 text={currentuser.username}
                 size={22}
+                color={colors.text}
               />
-              <Text style={styles.user_city}>{currentuser.city}</Text>
+              <Text style={[styles.user_city, { color: colors.text }]}>
+                {currentuser.city}
+              </Text>
             </View>
             <View style={styles.main}>
               <TouchableOpacity
@@ -97,8 +104,26 @@ export function HomeModal({ navigation }) {
                 }}
                 style={styles.link_container}
               >
-                <Feather name="edit" color={"#404040"} size={15} />
-                <Text style={styles.link_text}>Edit Profile</Text>
+                <Feather name="edit" color={colors.text} size={15} />
+                <Text style={[styles.link_text, { color: colors.text }]}>
+                  Edit Profile
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  toggleModal({ camera: false, home: false });
+                  navigation.navigate("themes");
+                }}
+                style={styles.link_container}
+              >
+                <MaterialCommunityIcons
+                  name="theme-light-dark"
+                  color={colors.text}
+                  size={17}
+                />
+                <Text style={[styles.link_text, { color: colors.text }]}>
+                  Themes
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -107,8 +132,10 @@ export function HomeModal({ navigation }) {
                 }}
                 style={styles.link_container}
               >
-                <SimpleLineIcons name="logout" color={"#404040"} size={15} />
-                <Text style={styles.link_text}>Logout</Text>
+                <SimpleLineIcons name="logout" color={colors.text} size={15} />
+                <Text style={[styles.link_text, { color: colors.text }]}>
+                  Logout
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() =>
@@ -116,8 +143,13 @@ export function HomeModal({ navigation }) {
                 }
                 style={styles.link_container}
               >
-                <AntDesign name="message1" color={"#404040"} size={15} />
-                <Text style={[{ marginTop: -3 }, styles.link_text]}>
+                <AntDesign name="message1" color={colors.text} size={15} />
+                <Text
+                  style={[
+                    styles.link_text,
+                    { marginTop: -3, color: colors.text },
+                  ]}
+                >
                   Contact Me
                 </Text>
               </TouchableOpacity>
@@ -127,8 +159,8 @@ export function HomeModal({ navigation }) {
                 }
                 style={styles.link_container}
               >
-                <Ionicons name="bug-outline" color={"#404040"} size={18} />
-                <Text style={[{ marginTop: -2 }, styles.link_text]}>
+                <Ionicons name="bug-outline" color={colors.text} size={18} />
+                <Text style={[styles.link_text, { color: colors.text }]}>
                   Report a bug
                 </Text>
               </TouchableOpacity>
@@ -138,13 +170,17 @@ export function HomeModal({ navigation }) {
                 }
                 style={styles.link_container}
               >
-                <Foundation name="web" color={"#404040"} size={19} />
-                <Text style={styles.link_text}>My website</Text>
+                <Foundation name="web" color={colors.text} size={19} />
+                <Text style={[styles.link_text, { color: colors.text }]}>
+                  My website
+                </Text>
               </TouchableOpacity>
             </View>
             <View style={styles.footer}>
-              <Text style={styles.copyright}>Version 2.0.2</Text>
-              <Text style={styles.copyright}>
+              <Text style={[styles.copyright, { color: colors.text }]}>
+                Version 2.0.2
+              </Text>
+              <Text style={[styles.copyright, { color: colors.text }]}>
                 &copy; Copyright 2022, Suman Biswas
               </Text>
             </View>
