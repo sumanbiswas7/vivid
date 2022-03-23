@@ -9,6 +9,7 @@ import {
   ScrollView,
   Picker,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import { StatusBar as ESB } from "expo-status-bar";
 import { useTheme } from "@react-navigation/native";
@@ -105,6 +106,22 @@ export function EditProfile({ navigation }) {
   }
   async function handleEditSubmit() {
     setUpdating(true);
+    let err = 0;
+    tags.tagsArray.forEach((tag) => {
+      if (tag.length > 9) {
+        ToastAndroid.show(
+          "Tags must not exceed 10 characters",
+          ToastAndroid.SHORT
+        );
+        setUpdating(false);
+        err = 1;
+      }
+    });
+    if (tags.tagsArray.length > 3) {
+      ToastAndroid.show("You can add max 3 tags", ToastAndroid.SHORT);
+      setUpdating(false);
+      err = 1;
+    }
     if (image != currentuser.profile) {
       let uri = image;
       const filename = uri.substring(uri.lastIndexOf("/") + 1);
@@ -153,6 +170,9 @@ export function EditProfile({ navigation }) {
     }
 
     async function submitEdit(img) {
+      if (err != 0) {
+        return;
+      }
       let newArr;
       if (tags.tagsArray.length > 0 && tags.tagsArray !== currentuser.tags) {
         const arr = [...tags.tagsArray];
@@ -197,7 +217,6 @@ export function EditProfile({ navigation }) {
       });
     }
   }
-
   return (
     <View style={[styles.container, { backgroundColor: colors.bg_dark }]}>
       <ImageModal handleClick={handleChooseImageClick} />
@@ -268,6 +287,7 @@ export function EditProfile({ navigation }) {
               placeholder="your name"
               defaultValue={currentuser.fullname}
               color={colors.text}
+              placeholderTextColor={colors.accent}
             />
           </View>
           <View style={styles.flex}>
@@ -275,11 +295,16 @@ export function EditProfile({ navigation }) {
               username
             </Text>
             <TextInput
-              onChangeText={(t) => setUserName(t)}
+              onChangeText={(t) => {
+                setUserName(t.toLowerCase().split(" ").join(""));
+              }}
               style={styles.input}
               placeholder="username"
-              defaultValue={currentuser.username}
+              // defaultValue={currentuser.username}
               color={colors.text}
+              value={userName}
+              placeholderTextColor={colors.accent}
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.flex}>
@@ -292,6 +317,7 @@ export function EditProfile({ navigation }) {
               placeholder="city"
               defaultValue={currentuser.city}
               color={colors.text}
+              placeholderTextColor={colors.accent}
             />
           </View>
           <View style={styles.flex}>
@@ -302,8 +328,10 @@ export function EditProfile({ navigation }) {
               onChangeText={(t) => setBio(t)}
               style={styles.input}
               placeholder="bio"
+              autoCapitalize="none"
               defaultValue={currentuser.bio}
               color={colors.text}
+              placeholderTextColor={colors.accent}
             />
           </View>
           <View
@@ -316,7 +344,7 @@ export function EditProfile({ navigation }) {
             ]}
           >
             <Text style={[styles.input_title, { color: colors.text }]}>
-              tags
+              hobbies
             </Text>
             <View style={styles.tag_container}>
               <TagInput
@@ -325,6 +353,8 @@ export function EditProfile({ navigation }) {
                 style={{ width: 250, fontFamily: "Comfortaa-Medium" }}
                 tagStyle={styles.tag}
                 placeholder="add tags (max - 3)"
+                placeholderTextColor={colors.text}
+                color={colors.text}
               />
             </View>
           </View>
@@ -396,6 +426,7 @@ export function EditProfile({ navigation }) {
               defaultValue={currentuser.ig_link}
               placeholder="instagram handle"
               color={colors.text}
+              placeholderTextColor={colors.accent}
             />
           </View>
           <View style={styles.flex}>
@@ -411,6 +442,7 @@ export function EditProfile({ navigation }) {
               placeholder="facebook handle"
               defaultValue={currentuser.fb_link}
               color={colors.text}
+              placeholderTextColor={colors.accent}
             />
           </View>
           <View style={styles.flex}>
@@ -426,6 +458,7 @@ export function EditProfile({ navigation }) {
               placeholder="github handle"
               defaultValue={currentuser.git_link}
               color={colors.text}
+              placeholderTextColor={colors.accent}
             />
           </View>
         </ScrollView>

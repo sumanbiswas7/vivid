@@ -36,7 +36,7 @@ export default function SignUp({ navigation }) {
   const [errText, setErrText] = useState("");
   const [fontLoaded, setFontLoaded] = useState(false);
   const [image, setImage] = useState("");
-  const [userInput, setUserInput] = useState();
+  const [userInput, setUserInput] = useState({ username: "" });
   const { colors } = useTheme();
   useEffect(() => {
     const LoadFonts = async () => {
@@ -244,8 +244,15 @@ export default function SignUp({ navigation }) {
             placeholderTextColor={colors.text}
           />
           <TextInput
-            onChangeText={(t) => setUserInput((p) => ({ ...p, username: t }))}
+            onChangeText={(t) =>
+              setUserInput((p) => ({
+                ...p,
+                username: t.toLowerCase().split(" ").join(""),
+              }))
+            }
+            value={userInput.username}
             placeholder="username"
+            autoCapitalize="none"
             style={[
               styles.input,
               { color: colors.text, borderBottomColor: colors.accent },

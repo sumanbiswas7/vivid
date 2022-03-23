@@ -305,7 +305,7 @@ export default function OtherProfile({ navigation, route }) {
                   { backgroundColor: colors.bg_light },
                 ]}
               >
-                <Text style={styles.nopost_text}>
+                <Text style={[styles.nopost_text, { color: colors.text }]}>
                   User doesn't have any post
                 </Text>
               </View>
