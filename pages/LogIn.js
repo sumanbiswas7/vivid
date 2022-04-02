@@ -107,7 +107,7 @@ export default function LogIn({ navigation }) {
               <Text
                 onPress={() => navigation.replace("signup")}
                 style={{
-                  color: "#ff5f6d",
+                  color: colors.gradient_2,
                 }}
               >
                 {" "}

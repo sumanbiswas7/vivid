@@ -11,6 +11,9 @@ import {
   ScrollView,
   Linking,
   ActivityIndicator,
+  Modal,
+  TouchableWithoutFeedback,
+  Button,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import BottomNavBar from "../components/BottomNavBar";
@@ -34,10 +37,12 @@ import {
   collection,
   getDocs,
 } from "firebase/firestore";
+import { ReportProfileModal } from "../components/Modals/ReportProfileModal";
 
 export default function OtherProfile({ navigation, route }) {
   const { email } = route.params;
   const posts = useSelector((state) => state.posts);
+  const currentUserName = useSelector((state) => state.currentuser.username);
   const [totalLikes, setTotalLikes] = useState();
   const [isLoaded, setIsLoaded] = useState(false);
   const [currUser, setCurrUser] = useState(false);
@@ -102,7 +107,11 @@ export default function OtherProfile({ navigation, route }) {
                 {currUser.username}
               </Text>
             </View>
-            <Entypo name="dots-three-vertical" size={15} color={colors.text} />
+            <ReportProfileModal
+              id={currUser.email}
+              reported_by={currentUserName}
+              username={currUser.username}
+            />
           </View>
           <ScrollView
             contentContainerStyle={{
@@ -122,7 +131,21 @@ export default function OtherProfile({ navigation, route }) {
                 width: Dimensions.get("window").width,
               }}
             >
-              <UserImg profile_img={currUser.profile} size={70} />
+              <View
+                style={{
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  borderRadius: 50,
+                  elevation: 5,
+                }}
+              >
+                <UserImg profile_img={currUser.profile} size={70} />
+              </View>
               <VerifiedText
                 text={currUser.fullname}
                 isVerified={currUser.isVerified}
@@ -394,5 +417,14 @@ const styles = StyleSheet.create({
   },
   nopost_text: {
     fontFamily: "Comfortaa-Medium",
+  },
+
+  modalContainer: {
+    backgroundColor: "#fff",
+    width: 300,
+    height: 200,
+    borderRadius: 10,
+    justifyContent: "space-between",
+    overflow: "hidden",
   },
 });

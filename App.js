@@ -40,6 +40,7 @@ import { createContext } from "react";
 import Onboarding from "react-native-onboarding-swiper";
 import ImageAutoHeight from "react-native-image-auto-height";
 import { Dimensions } from "react-native";
+import { MenuProvider } from "react-native-popup-menu";
 
 const Tab = createBottomTabNavigator();
 function BottomTabNav() {
@@ -176,28 +177,30 @@ export default function App() {
   }
   return (
     <Provider store={store}>
-      <ThemeContext.Provider value={themedata}>
-        <NavigationContainer theme={theme}>
-          <Stack.Navigator
-            initialRouteName="home"
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="home" component={BottomTabNav} />
-            <Stack.Screen name="profile" component={Profile} />
-            <Stack.Screen name="signup" component={SignUp} />
-            <Stack.Screen name="login" component={LogIn} />
-            <Stack.Screen name="createpost" component={CreatePost} />
-            <Stack.Screen name="likes" component={Likes} />
-            <Stack.Screen name="comments" component={Comments} />
-            <Stack.Screen name="otherprofile" component={OtherProfile} />
-            <Stack.Screen name="editprofile" component={EditProfile} />
-            <Stack.Screen name="notifications" component={Notifications} />
-            <Stack.Screen name="themes" component={Themes} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </ThemeContext.Provider>
+      <MenuProvider>
+        <ThemeContext.Provider value={themedata}>
+          <NavigationContainer theme={theme}>
+            <Stack.Navigator
+              initialRouteName="home"
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="home" component={BottomTabNav} />
+              <Stack.Screen name="profile" component={Profile} />
+              <Stack.Screen name="signup" component={SignUp} />
+              <Stack.Screen name="login" component={LogIn} />
+              <Stack.Screen name="createpost" component={CreatePost} />
+              <Stack.Screen name="likes" component={Likes} />
+              <Stack.Screen name="comments" component={Comments} />
+              <Stack.Screen name="otherprofile" component={OtherProfile} />
+              <Stack.Screen name="editprofile" component={EditProfile} />
+              <Stack.Screen name="notifications" component={Notifications} />
+              <Stack.Screen name="themes" component={Themes} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ThemeContext.Provider>
+      </MenuProvider>
     </Provider>
   );
 }

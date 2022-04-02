@@ -149,43 +149,42 @@ export default function CreatePost({ navigation }) {
   }
   function handleChooseImageClick(e) {
     const pickImage = async (mode) => {
-      if (mode == "camera") {
-        const permissionResult =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (permissionResult.granted === false) {
-          return;
-        }
-        const result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          quality: 1,
-        });
-        if (!result.cancelled) {
-          const manipResult = await manipulateAsync(
-            result.uri,
-            [{ resize: { width: 800 } }],
-            {
-              compress: 0.6,
-            }
-          );
-          setImage(manipResult.uri);
-        }
-      } else {
-        let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          quality: 1,
-        });
-        if (!result.cancelled) {
-          const manipResult = await manipulateAsync(
-            result.uri,
-            [{ resize: { width: 800 } }],
-            {
-              compress: 0.6,
-            }
-          );
-          setImage(manipResult.uri);
-        }
+      // if (mode == "camera") {
+      //   const permissionResult =
+      //     await ImagePicker.requestMediaLibraryPermissionsAsync();
+      //   if (permissionResult.granted === false) {
+      //     return;
+      //   }
+      //   const result = await ImagePicker.launchCameraAsync({
+      //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      //     allowsEditing: true,
+      //     quality: 1,
+      //   });
+      //   if (!result.cancelled) {
+      //     const manipResult = await manipulateAsync(
+      //       result.uri,
+      //       [{ resize: { width: 800 } }],
+      //       {
+      //         compress: 0.6,
+      //       }
+      //     );
+      //     setImage(manipResult.uri);
+      //   }
+      // }
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        const manipResult = await manipulateAsync(
+          result.uri,
+          [{ resize: { width: 800 } }],
+          {
+            compress: 0.6,
+          }
+        );
+        setImage(manipResult.uri);
       }
     };
     if (e == "camera") {
@@ -213,7 +212,7 @@ export default function CreatePost({ navigation }) {
                 Create Post
               </Text>
             </View>
-            <Entypo name="dots-three-vertical" size={15} color={colors.text} />
+            {/* <Entypo name="dots-three-vertical" size={15} color={colors.text} /> */}
           </View>
           <ImageModal handleClick={handleChooseImageClick} />
           <ScrollView
@@ -285,7 +284,8 @@ export default function CreatePost({ navigation }) {
                   />
                   {image ? (
                     <TouchableOpacity
-                      onPress={() => toggleModal({ camera: true, home: false })}
+                      onPress={() => handleChooseImageClick("gallery")}
+                      // onPress={() => toggleModal({ camera: true, home: false })}
                     >
                       <ImageAutoHeight
                         style={styles.selected_img}
@@ -300,8 +300,9 @@ export default function CreatePost({ navigation }) {
                           styles.image_picker_box,
                           { backgroundColor: colors.home_fg },
                         ]}
-                        onPress={() =>
-                          toggleModal({ camera: true, home: false })
+                        onPress={
+                          () => handleChooseImageClick("gallery")
+                          // toggleModal({ camera: true, home: false })
                         }
                       >
                         <Entypo
@@ -393,7 +394,7 @@ export default function CreatePost({ navigation }) {
       ) : (
         <ActivityIndicator
           size={25}
-          style={styles.activity}
+          style={[styles.activity, { backgroundColor: colors.home_bg }]}
           color={colors.gradient_2}
         />
       )}

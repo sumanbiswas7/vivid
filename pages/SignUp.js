@@ -6,6 +6,7 @@ import {
   Image,
   TextInput,
   Dimensions,
+  Linking,
 } from "react-native";
 import { ImageModal } from "../components/ImageModal";
 import { useDispatch, useSelector } from "react-redux";
@@ -48,46 +49,45 @@ export default function SignUp({ navigation }) {
 
   function handleChooseImageClick(e) {
     const pickImage = async (mode) => {
-      if (mode == "camera") {
-        const permissionResult =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (permissionResult.granted === false) {
-          setModalVisible(false);
-          return;
-        }
-        const result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.5,
-        });
-        if (!result.cancelled) {
-          const manipResult = await manipulateAsync(
-            result.uri,
-            [{ resize: { width: 500 } }],
-            {
-              compress: 0.4,
-            }
-          );
-          setImage(manipResult.uri);
-        }
-      } else {
-        let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.5,
-        });
-        if (!result.cancelled) {
-          const manipResult = await manipulateAsync(
-            result.uri,
-            [{ resize: { width: 500 } }],
-            {
-              compress: 0.4,
-            }
-          );
-          setImage(manipResult.uri);
-        }
+      // if (mode == "camera") {
+      //   const permissionResult =
+      //     await ImagePicker.requestMediaLibraryPermissionsAsync();
+      //   if (permissionResult.granted === false) {
+      //     setModalVisible(false);
+      //     return;
+      //   }
+      //   const result = await ImagePicker.launchCameraAsync({
+      //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      //     allowsEditing: true,
+      //     aspect: [1, 1],
+      //     quality: 0.5,
+      //   });
+      //   if (!result.cancelled) {
+      //     const manipResult = await manipulateAsync(
+      //       result.uri,
+      //       [{ resize: { width: 500 } }],
+      //       {
+      //         compress: 0.4,
+      //       }
+      //     );
+      //     setImage(manipResult.uri);
+      //   }
+      // }
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+      if (!result.cancelled) {
+        const manipResult = await manipulateAsync(
+          result.uri,
+          [{ resize: { width: 500 } }],
+          {
+            compress: 0.4,
+          }
+        );
+        setImage(manipResult.uri);
       }
     };
     if (e == "camera") {
@@ -200,7 +200,10 @@ export default function SignUp({ navigation }) {
           <ImageModal handleClick={handleChooseImageClick} />
           {/* Image Choosing Box */}
           <TouchableOpacity
-            onPress={() => toggleModal({ camera: true, home: false })}
+            onPress={
+              () => handleChooseImageClick("gallery")
+              // toggleModal({ camera: true, home: false })
+            }
             style={styles.selected_img_box}
           >
             <View
@@ -298,6 +301,7 @@ export default function SignUp({ navigation }) {
           {errText ? (
             <Text style={styles.err_text}>{errText.slice(10)}</Text>
           ) : null}
+
           <TouchableOpacity
             disabled={buttonLoader}
             style={styles.signup_btn_box}
@@ -323,7 +327,7 @@ export default function SignUp({ navigation }) {
               <Text
                 onPress={() => navigation.navigate("login")}
                 style={{
-                  color: "#ff5f6d",
+                  color: colors.gradient_2,
                 }}
               >
                 {" "}
@@ -332,6 +336,27 @@ export default function SignUp({ navigation }) {
               here
             </Text>
           </>
+          <Text
+            style={{
+              marginHorizontal: 20,
+              position: "absolute",
+              bottom: 40,
+              color: colors.text,
+            }}
+          >
+            By clicking "Sign Up" I accept that I have read and accepted the
+            &nbsp;
+            <Text
+              onPress={() =>
+                Linking.openURL(
+                  "https://sumanbiswas.vercel.app/apps/privacy-policy/vivid"
+                )
+              }
+              style={{ color: colors.gradient_2 }}
+            >
+              Privacy Policy
+            </Text>
+          </Text>
         </View>
       ) : (
         <CircleLoader />

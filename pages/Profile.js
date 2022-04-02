@@ -27,6 +27,7 @@ import { StarFill, StarOutline } from "../components/Post/Star";
 import { useEffect, useState } from "react";
 import { ProfilePost } from "../components/ProfilePost";
 import moment from "moment";
+import { ProfileModal } from "../components/Modals/ProfileModal";
 
 export default function Profile({ navigation }) {
   const currUser = useSelector((state) => state.currentuser);
@@ -68,7 +69,7 @@ export default function Profile({ navigation }) {
                 {currUser.username}
               </Text>
             </View>
-            <Entypo name="dots-three-vertical" size={15} color={colors.text} />
+            <ProfileModal navigation={navigation} />
           </View>
           <ScrollView
             contentContainerStyle={{
@@ -88,7 +89,21 @@ export default function Profile({ navigation }) {
                 width: Dimensions.get("window").width,
               }}
             >
-              <UserImg profile_img={currUser.profile} size={70} />
+              <View
+                style={{
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  borderRadius: 50,
+                  elevation: 5,
+                }}
+              >
+                <UserImg profile_img={currUser.profile} size={70} />
+              </View>
               <VerifiedText
                 text={currUser.fullname}
                 isVerified={currUser.isVerified}
@@ -309,9 +324,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "#fff",
     position: "absolute",
-    shadowColor: "#000",
     zIndex: 99,
     top: SB.currentHeight,
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,

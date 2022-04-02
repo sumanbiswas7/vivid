@@ -56,46 +56,45 @@ export function EditProfile({ navigation }) {
 
   function handleChooseImageClick(e) {
     const pickImage = async (mode) => {
-      if (mode == "camera") {
-        const permissionResult =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (permissionResult.granted === false) {
-          setModalVisible(false);
-          return;
-        }
-        const result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.5,
-        });
-        if (!result.cancelled) {
-          const manipResult = await manipulateAsync(
-            result.uri,
-            [{ resize: { width: 500 } }],
-            {
-              compress: 0.4,
-            }
-          );
-          setImage(manipResult.uri);
-        }
-      } else {
-        let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 0.5,
-        });
-        if (!result.cancelled) {
-          const manipResult = await manipulateAsync(
-            result.uri,
-            [{ resize: { width: 500 } }],
-            {
-              compress: 0.4,
-            }
-          );
-          setImage(manipResult.uri);
-        }
+      // if (mode == "camera") {
+      //   const permissionResult =
+      //     await ImagePicker.requestMediaLibraryPermissionsAsync();
+      //   if (permissionResult.granted === false) {
+      //     setModalVisible(false);
+      //     return;
+      //   }
+      //   const result = await ImagePicker.launchCameraAsync({
+      //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      //     allowsEditing: true,
+      //     aspect: [1, 1],
+      //     quality: 0.5,
+      //   });
+      //   if (!result.cancelled) {
+      //     const manipResult = await manipulateAsync(
+      //       result.uri,
+      //       [{ resize: { width: 500 } }],
+      //       {
+      //         compress: 0.4,
+      //       }
+      //     );
+      //     setImage(manipResult.uri);
+      //   }
+      // }
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+      if (!result.cancelled) {
+        const manipResult = await manipulateAsync(
+          result.uri,
+          [{ resize: { width: 500 } }],
+          {
+            compress: 0.4,
+          }
+        );
+        setImage(manipResult.uri);
       }
     };
     if (e == "camera") {
@@ -256,7 +255,10 @@ export function EditProfile({ navigation }) {
           showsVerticalScrollIndicator={false}
         >
           <TouchableOpacity
-            onPress={() => toggleModal({ camera: true, home: false })}
+            onPress={
+              () => handleChooseImageClick("gallery")
+              // toggleModal({ camera: true, home: false })
+            }
             style={{ alignSelf: "center", marginTop: 30 }}
           >
             <UserImg profile_img={image} size={60} />

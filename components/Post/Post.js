@@ -17,11 +17,11 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { useTheme } from "@react-navigation/native";
+import { ReportPostModal } from "../Modals/ReportPostModal";
 
 export function Post(props) {
   const currentuser = useSelector((state) => state.currentuser);
   const [liketemp, setLikeTemp] = useState(false);
-  const [reportModal, setReportModal] = useState(false);
   const [temp, setTemp] = useState(null);
   const [newArr, setNewArr] = useState(props.liked_by);
   const { colors } = useTheme();
@@ -104,23 +104,6 @@ export function Post(props) {
 
   return (
     <View>
-      <Modal animationType="slide" transparent visible={reportModal}>
-        <View style={[styles.report_view, { backgroundColor: colors.home_fg }]}>
-          <Text style={[styles.report_text, { color: colors.text }]}>
-            Report this post?
-          </Text>
-          <TouchableOpacity onPress={() => setReportModal(false)}>
-            <Text style={[styles.report_btn, { color: colors.text }]}>
-              REPORT
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setReportModal(false)}>
-            <Text style={[styles.report_btn, { color: colors.text }]}>
-              CANCEL
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
       <View style={[styles.header, { backgroundColor: colors.home_fg }]}>
         <TouchableOpacity
           onPress={() =>
@@ -142,14 +125,13 @@ export function Post(props) {
             </View>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setReportModal(true);
-          }}
-          style={styles.other_btn}
-        >
-          <Entypo color={colors.text} name="dots-three-vertical" size={15} />
-        </TouchableOpacity>
+        <ReportPostModal
+          id={props.id}
+          img={props.post_img}
+          caption={props.caption}
+          user={props.username}
+          reported_by={currentuser.username}
+        />
       </View>
       {props.caption ? (
         <Text
