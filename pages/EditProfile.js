@@ -33,6 +33,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import * as FileSystem from "expo-file-system";
 
 export function EditProfile({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
@@ -53,6 +54,7 @@ export function EditProfile({ navigation }) {
   const [fb, setFb] = useState(currentuser.fb_link);
   const [updating, setUpdating] = useState(false);
   const [image, setImage] = useState(currentuser.profile);
+  const [previewImage, setPreviewImage] = useState(currentuser.profile);
 
   function handleChooseImageClick(e) {
     const pickImage = async (mode) => {
@@ -94,7 +96,12 @@ export function EditProfile({ navigation }) {
             compress: 0.4,
           }
         );
-        setImage(manipResult.uri);
+        const base64 = await FileSystem.readAsStringAsync(manipResult.uri, {
+          encoding: "base64",
+        });
+        let base64Img = `data:image/jpg;base64,${base64}`;
+        setPreviewImage(manipResult.uri);
+        setImage(base64Img);
       }
     };
     if (e == "camera") {
@@ -121,49 +128,23 @@ export function EditProfile({ navigation }) {
       setUpdating(false);
       err = 1;
     }
-    if (image != currentuser.profile) {
-      let uri = image;
-      const filename = uri.substring(uri.lastIndexOf("/") + 1);
-      const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function (e) {
-          console.log(e);
-          reject(new TypeError("Network request failed"));
-        };
-        xhr.responseType = "blob";
-        xhr.open("GET", uri, true);
-        xhr.send(null);
-      });
-      const storage = getStorage();
-      const storageRef = sRef(storage, `users/${filename}`);
-      const uploadTask = uploadBytesResumable(storageRef, blob);
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-          }
+    if (previewImage != currentuser.profile) {
+      let data = {
+        file: image,
+        upload_preset: "co8zdtvh",
+      };
+      fetch("https://api.cloudinary.com/v1_1/dg4rjg58p/image/upload", {
+        body: JSON.stringify(data),
+        headers: {
+          "content-type": "application/json",
         },
-        (error) => {
-          console.log("uploading user image failed" + error);
-          setUpdating(false);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            submitEdit(downloadURL);
-          });
-        }
-      );
+        method: "POST",
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          submitEdit(data.url);
+        })
+        .catch((err) => console.log(err));
     } else {
       submitEdit(currentuser.profile);
     }
@@ -261,7 +242,7 @@ export function EditProfile({ navigation }) {
             }
             style={{ alignSelf: "center", marginTop: 30 }}
           >
-            <UserImg profile_img={image} size={60} />
+            <UserImg profile_img={previewImage} size={60} />
             <IonIcons
               name="add-circle"
               size={15}

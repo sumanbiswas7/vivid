@@ -31,12 +31,14 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, getFirestore } from "firebase/firestore";
 import useFonts from "../hooks/useFonts";
 import { CircleLoader } from "../components/CircleLoader";
+import * as FileSystem from "expo-file-system";
+
 export default function SignUp({ navigation }) {
-  const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
   const [buttonLoader, setButtonLoader] = useState(false);
   const [errText, setErrText] = useState("");
   const [fontLoaded, setFontLoaded] = useState(false);
   const [image, setImage] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
   const [userInput, setUserInput] = useState({ username: "" });
   const { colors } = useTheme();
   useEffect(() => {
@@ -87,7 +89,12 @@ export default function SignUp({ navigation }) {
             compress: 0.4,
           }
         );
-        setImage(manipResult.uri);
+        const base64 = await FileSystem.readAsStringAsync(manipResult.uri, {
+          encoding: "base64",
+        });
+        let base64Img = `data:image/jpg;base64,${base64}`;
+        setPreviewImage(manipResult.uri);
+        setImage(base64Img);
       }
     };
     if (e == "camera") {
@@ -110,48 +117,22 @@ export default function SignUp({ navigation }) {
       setButtonLoader(true);
       setErrText("");
       if (image) {
-        let uri = image;
-        const filename = uri.substring(uri.lastIndexOf("/") + 1);
-        const blob = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.onload = function () {
-            resolve(xhr.response);
-          };
-          xhr.onerror = function (e) {
-            console.log(e);
-            reject(new TypeError("Network request failed"));
-          };
-          xhr.responseType = "blob";
-          xhr.open("GET", uri, true);
-          xhr.send(null);
-        });
-        const storage = getStorage();
-        const storageRef = sRef(storage, `users/${filename}`);
-        const uploadTask = uploadBytesResumable(storageRef, blob);
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            switch (snapshot.state) {
-              case "paused":
-                console.log("Upload is paused");
-                break;
-              case "running":
-                console.log("Upload is running");
-                break;
-            }
+        let data = {
+          file: image,
+          upload_preset: "co8zdtvh",
+        };
+        fetch("https://api.cloudinary.com/v1_1/dg4rjg58p/image/upload", {
+          body: JSON.stringify(data),
+          headers: {
+            "content-type": "application/json",
           },
-          (error) => {
-            console.log("uploading user image failed" + error);
-            setButtonLoader(false);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              signUpAndSaveUser(downloadURL);
-            });
-          }
-        );
+          method: "POST",
+        })
+          .then((resp) => resp.json())
+          .then((data) => {
+            signUpAndSaveUser(data.url, userInput.email, userInput.password);
+          })
+          .catch((err) => console.log(err));
       } else {
         signUpAndSaveUser("", userInput.email, userInput.password);
       }
@@ -223,7 +204,7 @@ export default function SignUp({ navigation }) {
               ) : (
                 <Image
                   style={styles.select_img_gradient}
-                  source={{ uri: image }}
+                  source={{ uri: previewImage }}
                 />
               )}
               <Text
@@ -339,8 +320,8 @@ export default function SignUp({ navigation }) {
           <Text
             style={{
               marginHorizontal: 20,
-              position: "absolute",
-              bottom: 40,
+              marginTop: 50,
+              marginBottom: -50,
               color: colors.text,
             }}
           >

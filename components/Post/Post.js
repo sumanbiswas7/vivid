@@ -131,6 +131,8 @@ export function Post(props) {
           caption={props.caption}
           user={props.username}
           reported_by={currentuser.username}
+          useremail={props.email}
+          navigation={props.navigation}
         />
       </View>
       {props.caption ? (

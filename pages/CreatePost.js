@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Flow } from "react-native-animated-spinkit";
+import { Wave } from "react-native-animated-spinkit";
 import * as Progress from "react-native-progress";
 import * as ImagePicker from "expo-image-picker";
 import { doc, setDoc, getFirestore } from "firebase/firestore";
@@ -22,6 +23,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { manipulateAsync } from "expo-image-manipulator";
+import * as FileSystem from "expo-file-system";
 import BottomNavBar from "../components/BottomNavBar";
 import { useTheme } from "@react-navigation/native";
 import { ImageModal } from "../components/ImageModal";
@@ -40,15 +42,16 @@ import { VerifiedText } from "../components/Post/VerifiedText";
 import { StarOutline } from "../components/Post/Star";
 import ImageAutoHeight from "react-native-image-auto-height";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import axios from "axios";
 
 export default function CreatePost({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
   const initialLoadContex = useSelector((state) => state.initialLoad);
-  const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
   const [buttonLoader, setButtonLoader] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [image, setImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [nullUpload, setNullUpload] = useState("");
   const { colors } = useTheme();
@@ -124,6 +127,7 @@ export default function CreatePost({ navigation }) {
           comments: [],
           img: url,
           caption: caption,
+          timestamp: new Date(),
           user_data: {
             username: currentuser.username,
             email: currentuser.email,
@@ -184,7 +188,12 @@ export default function CreatePost({ navigation }) {
             compress: 0.6,
           }
         );
-        setImage(manipResult.uri);
+        const base64 = await FileSystem.readAsStringAsync(manipResult.uri, {
+          encoding: "base64",
+        });
+        let base64Img = `data:image/jpg;base64,${base64}`;
+        setPreviewImage(manipResult.uri);
+        setImage(base64Img);
       }
     };
     if (e == "camera") {
@@ -192,6 +201,61 @@ export default function CreatePost({ navigation }) {
     } else if (e == "gallery") {
       pickImage("gallery");
     }
+  }
+  async function uploadPost() {
+    setIsUploading(true);
+    setButtonLoader(true);
+    let data = {
+      file: image,
+      upload_preset: "nhpvtkem",
+    };
+    fetch("https://api.cloudinary.com/v1_1/dg4rjg58p/image/upload", {
+      body: JSON.stringify(data),
+      headers: {
+        "content-type": "application/json",
+      },
+      method: "POST",
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        postImage(data.url);
+        function postImage(url) {
+          const DB = getFirestore();
+          const PostId = uuid.v4();
+          const postSchema = {
+            id: PostId,
+            date: moment(new Date()).format("DD-MM-YYYY, h:mm a"),
+            likes: {
+              likes: 0,
+              total_likes: [],
+            },
+            comments: [],
+            img: url,
+            caption: caption,
+            timestamp: new Date(),
+            user_data: {
+              username: currentuser.username,
+              email: currentuser.email,
+              city: currentuser.city,
+              profile_img: currentuser.profile,
+              isVerified: currentuser.isVerified,
+            },
+          };
+          setDoc(doc(DB, "posts", PostId), postSchema).then(() => {
+            setDoc(doc(DB, "users", currentuser.email), {
+              ...currentuser,
+              posts: [...currentuser.posts, PostId],
+            }).then(() => {
+              setButtonLoader(false);
+              console.log("POSTED");
+              setImage(false);
+              setIsUploading(false);
+              navigation.replace("home");
+            });
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   }
   return (
     <>
@@ -228,16 +292,14 @@ export default function CreatePost({ navigation }) {
             <View style={styles.page_main_box}>
               {isUploading ? (
                 <>
-                  <Progress.Pie
-                    style={{ marginBottom: 20, marginTop: 100 }}
+                  <Wave
+                    style={{ marginBottom: 20, marginTop: 150 }}
                     color={colors.gradient_2}
-                    progress={progress}
-                    size={150}
                   />
                   <Text
                     style={[{ color: colors.gradient_2 }, styles.progress_text]}
                   >
-                    Uploading - {progress * 100}%
+                    Uploading Post
                   </Text>
                 </>
               ) : (
@@ -289,7 +351,7 @@ export default function CreatePost({ navigation }) {
                     >
                       <ImageAutoHeight
                         style={styles.selected_img}
-                        source={{ uri: image }}
+                        source={{ uri: previewImage }}
                       />
                     </TouchableOpacity>
                   ) : (
@@ -368,25 +430,29 @@ export default function CreatePost({ navigation }) {
                 <Text style={styles.upload_err_text}>{nullUpload}</Text>
               ) : null}
               {caption || image ? (
-                <TouchableOpacity
-                  disabled={buttonLoader}
-                  onPress={handlePost}
-                  style={styles.signup_btn_box}
-                >
-                  <LinearGradient
-                    start={{ x: 0.9, y: 0.2 }}
-                    colors={[colors.gradient_1, colors.gradient_2]}
-                    style={styles.signup_btn}
-                  >
-                    {buttonLoader ? (
-                      <Flow size={30} color="#fff" />
-                    ) : (
-                      <Text style={{ fontWeight: "bold", color: "#fff" }}>
-                        POST
-                      </Text>
-                    )}
-                  </LinearGradient>
-                </TouchableOpacity>
+                <>
+                  {!isUploading ? (
+                    <TouchableOpacity
+                      disabled={buttonLoader}
+                      onPress={uploadPost}
+                      style={styles.signup_btn_box}
+                    >
+                      <LinearGradient
+                        start={{ x: 0.9, y: 0.2 }}
+                        colors={[colors.gradient_1, colors.gradient_2]}
+                        style={styles.signup_btn}
+                      >
+                        {buttonLoader ? (
+                          <Flow size={30} color="#fff" />
+                        ) : (
+                          <Text style={{ fontWeight: "bold", color: "#fff" }}>
+                            POST
+                          </Text>
+                        )}
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  ) : null}
+                </>
               ) : null}
             </View>
           </ScrollView>

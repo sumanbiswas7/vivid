@@ -64,7 +64,7 @@ export default function Home({ navigation }) {
     const db = getFirestore();
     const postRef = collection(db, "posts");
     const querySnapshot = await getDocs(
-      query(postRef, orderBy("date", "desc"), limit(40))
+      query(postRef, orderBy("timestamp", "desc"), limit(40))
     );
     const POSTS = [];
     querySnapshot.forEach((doc) => {

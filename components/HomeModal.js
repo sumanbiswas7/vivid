@@ -178,7 +178,7 @@ export function HomeModal({ navigation }) {
             </View>
             <View style={styles.footer}>
               <Text style={[styles.copyright, { color: colors.text }]}>
-                Version 2.1.2
+                Version 2.3.3
               </Text>
               <Text style={[styles.copyright, { color: colors.text }]}>
                 &copy; Copyright 2022, Suman Biswas

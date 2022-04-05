@@ -1,5 +1,10 @@
 import { View, Text, Alert, ToastAndroid } from "react-native";
-import { collection, addDoc, getFirestore } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getFirestore,
+  updateDoc,
+} from "firebase/firestore";
 import {
   Menu,
   MenuOptions,
@@ -10,6 +15,8 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { useTheme } from "@react-navigation/native";
 import { renderers } from "react-native-popup-menu";
 const { SlideInMenu } = renderers;
+import { useSelector } from "react-redux";
+import { doc, deleteDoc } from "firebase/firestore";
 
 export const ReportPostModal = ({
   navigation,
@@ -18,8 +25,10 @@ export const ReportPostModal = ({
   caption,
   user,
   reported_by,
+  useremail,
 }) => {
   const { colors } = useTheme();
+  const currUser = useSelector((state) => state.currentuser);
   async function handleReport() {
     ToastAndroid.show("Thanks for reporting", ToastAndroid.SHORT);
     const db = getFirestore();
@@ -32,7 +41,20 @@ export const ReportPostModal = ({
       reported_on: new Date(),
     });
   }
-
+  async function deletePost() {
+    const db = getFirestore();
+    // deleting post document from posts
+    await deleteDoc(doc(db, "posts", id)).then(() => {
+      navigation.replace("home");
+      ToastAndroid.show("Post Deleted", ToastAndroid.SHORT);
+    });
+    // deleting post id from users/posts array
+    let newPosts = [...currUser.posts];
+    newPostsArr = newPosts.filter((e) => e !== id);
+    await updateDoc(doc(db, "users", currUser.email), {
+      posts: newPostsArr,
+    });
+  }
   return (
     <View>
       <Menu renderer={SlideInMenu}>
@@ -58,9 +80,6 @@ export const ReportPostModal = ({
             },
           }}
         >
-          <Text style={{ fontSize: 18, paddingBottom: 10, color: colors.text }}>
-            Report this post ?
-          </Text>
           <MenuOption
             onSelect={() =>
               Alert.alert("would you like to report this post ?", "", [
@@ -76,8 +95,29 @@ export const ReportPostModal = ({
               ])
             }
           >
-            <Text style={{ color: colors.text, paddingVertical: 8 }}>YES</Text>
+            <Text style={{ color: colors.text, paddingVertical: 8 }}>
+              REPORT
+            </Text>
           </MenuOption>
+          {currUser.email == useremail ? (
+            <MenuOption
+              onSelect={() =>
+                Alert.alert("Are you sure you want to delete this post ?", "", [
+                  {
+                    text: "NO",
+                  },
+                  {
+                    text: "YES",
+                    onPress: () => {
+                      deletePost();
+                    },
+                  },
+                ])
+              }
+            >
+              <Text style={{ color: "red", paddingVertical: 8 }}>DELETE</Text>
+            </MenuOption>
+          ) : null}
           <MenuOption>
             <Text style={{ color: colors.text, paddingVertical: 8 }}>
               CANCEL

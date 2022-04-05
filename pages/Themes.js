@@ -85,7 +85,7 @@ export function Themes({ navigation }) {
       <View style={styles.row}>
         <ThemeButton
           theme={theme4}
-          name="80s pink"
+          name="navy"
           changeTheme={() => changeTheme("theme4", theme4)}
         />
         <ThemeButton
@@ -137,12 +137,12 @@ export function Themes({ navigation }) {
         />
         <ThemeButton
           theme={dark6}
-          name="peace"
+          name="tomato"
           changeTheme={() => changeTheme("dark6", dark6)}
         />
         <ThemeButton
           theme={dark7}
-          name="deep sea"
+          name="teal dive"
           changeTheme={() => changeTheme("dark7", dark7)}
         />
         <ThemeButton
