@@ -37,8 +37,12 @@ import * as FileSystem from "expo-file-system";
 
 export function EditProfile({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
+  const allposts = useSelector((state) => state.posts);
   const { colors } = useTheme();
-  const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
+  const { setCurrentuserPosts } = bindActionCreators(
+    actionCreators,
+    useDispatch()
+  );
   const [tags, setTags] = useState({
     tag: "",
     tagsArray: currentuser.tags || [],
@@ -52,6 +56,7 @@ export function EditProfile({ navigation }) {
   const [ig, setIg] = useState(currentuser.ig_link);
   const [git, setGit] = useState(currentuser.git_link);
   const [fb, setFb] = useState(currentuser.fb_link);
+  const [tw, setTw] = useState(currentuser.tw_link);
   const [updating, setUpdating] = useState(false);
   const [image, setImage] = useState(currentuser.profile);
   const [previewImage, setPreviewImage] = useState(currentuser.profile);
@@ -177,11 +182,11 @@ export function EditProfile({ navigation }) {
         ig_link: ig || "",
         git_link: git || "",
         fb_link: fb || "",
+        tw_link: tw || "",
         profile: img || currentuser.profile || "",
       }).then(() => {
         currentuser.posts.forEach((element) => {
           const postRef = doc(db, "posts", element);
-          console.log(element);
           updateDoc(postRef, {
             user_data: {
               username: userName || "",
@@ -192,14 +197,90 @@ export function EditProfile({ navigation }) {
             },
           });
         });
+        if (currentuser.liked_posts) {
+          updatePostLikesInteractions(currentuser.liked_posts, img);
+        }
+        if (currentuser.commented_posts) {
+          updatePostCommentsInteractions(currentuser.commented_posts, img);
+        }
         setUpdating(false);
         navigation.replace("home");
       });
     }
   }
+  function updatePostLikesInteractions(likedposts, img) {
+    const filteredPost = [];
+    likedposts.forEach((e) => {
+      for (let i = 0; i < allposts.length; i++) {
+        if (e == allposts[i].id) {
+          filteredPost.push(allposts[i]);
+        }
+      }
+    });
+    filteredPost.forEach((e) => {
+      const newTotalLikes = e.likes_data?.total_likes.filter(
+        (e) => e.by != currentuser.email
+      );
+      const newArr = {
+        ...e.likes_data,
+        total_likes: [
+          ...newTotalLikes,
+          {
+            profile: img || currentuser.profile || "",
+            username: userName || "",
+            by: currentuser.email,
+            isVerified: currentuser.isVerified,
+          },
+        ],
+      };
+      const db = getFirestore();
+      const intRef = doc(db, "posts", e.id);
+      updateDoc(intRef, {
+        likes_data: newArr,
+      });
+    });
+  }
+  function updatePostCommentsInteractions(commentedposts, img) {
+    const filteredPost = [];
+    commentedposts.forEach((e) => {
+      for (let i = 0; i < allposts.length; i++) {
+        if (e == allposts[i].id) {
+          filteredPost.push(allposts[i]);
+        }
+      }
+    });
+    filteredPost.forEach((e) => {
+      let excUserComments = e.comments.filter((o) => o.by != currentuser.email);
+      const incUserComments = e.comments.filter(
+        (o) => o.by == currentuser.email
+      );
+      const finalIncUserComments = [];
+      incUserComments.forEach((e) => {
+        const tempArr = {
+          ...e,
+          user: {
+            isVerified: currentuser.isVerified,
+            profile: img || currentuser.profile || "",
+            username: userName || "",
+          },
+        };
+        finalIncUserComments.push(tempArr);
+      });
+      const submitFinalCommentsArr = [
+        ...finalIncUserComments,
+        ...excUserComments,
+      ];
+      const db = getFirestore();
+      const intRef = doc(db, "posts", e.id);
+      updateDoc(intRef, {
+        comments: submitFinalCommentsArr,
+      }).catch((e) => console.error(e));
+    });
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: colors.bg_dark }]}>
-      <ImageModal handleClick={handleChooseImageClick} />
+      {/* <ImageModal handleClick={handleChooseImageClick} /> */}
       <View style={[styles.header, { backgroundColor: colors.bg_light }]}>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
@@ -440,6 +521,22 @@ export function EditProfile({ navigation }) {
               style={styles.input}
               placeholder="github handle"
               defaultValue={currentuser.git_link}
+              color={colors.text}
+              placeholderTextColor={colors.accent}
+            />
+          </View>
+          <View style={styles.flex}>
+            <AntDesign
+              style={styles.input_title}
+              name="twitter"
+              size={20}
+              color={colors.text}
+            />
+            <TextInput
+              onChangeText={(t) => setTw(t)}
+              style={styles.input}
+              placeholder="twitter handle"
+              defaultValue={currentuser.tw_link}
               color={colors.text}
               placeholderTextColor={colors.accent}
             />

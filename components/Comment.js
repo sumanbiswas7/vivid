@@ -18,7 +18,14 @@ export function Comment({ comment_data, navigation }) {
   const [load, setLoad] = useState();
   const { colors } = useTheme();
   useEffect(() => {
-    getUser();
+    if (!comment_data.user) {
+      console.log("GETTING COMMENT");
+      getUser();
+    } else {
+      console.log("SKIPPING REQUEST");
+      setUser(comment_data.user);
+      setLoad(true);
+    }
     async function getUser() {
       const db = getFirestore();
       const docRef = doc(db, "users", comment_data.by);
@@ -38,7 +45,7 @@ export function Comment({ comment_data, navigation }) {
         <View style={styles.container}>
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate("otherprofile", { email: user.email })
+              navigation.navigate("otherprofile", { email: comment_data.by })
             }
             style={styles.comment_header}
           >

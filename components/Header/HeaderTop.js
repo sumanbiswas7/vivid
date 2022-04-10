@@ -9,9 +9,13 @@ import { actionCreators } from "../../state";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useTheme } from "@react-navigation/native";
+import { useState } from "react";
 
 export function HeaderTop({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
+  const [notificationCount, setNotificationCount] = useState(
+    currentuser.notification?.length || null
+  );
   const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
   const { colors } = useTheme();
   return (
@@ -23,11 +27,12 @@ export function HeaderTop({ navigation }) {
         </View>
         <View style={styles.notification_img_container}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("notifications")}
+            onPress={() => {
+              setNotificationCount(0);
+              navigation.navigate("notifications");
+            }}
           >
-            <Notification
-              notification_count={currentuser.notification?.length}
-            />
+            <Notification notification_count={notificationCount} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => toggleModal({ camera: false, home: true })}

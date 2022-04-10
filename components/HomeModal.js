@@ -20,7 +20,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Foundation from "react-native-vector-icons/Foundation";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { onAuthStateChanged, getAuth, signOut } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function HomeModal({ navigation }) {
   const { toggleModal } = bindActionCreators(actionCreators, useDispatch());
@@ -29,13 +29,18 @@ export function HomeModal({ navigation }) {
   const [logoutModal, setLogoutModal] = useState(false);
   const { colors } = useTheme();
 
-  const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      toggleModal({ camera: false, home: false });
-      navigation.replace("login");
-    }
-  });
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        toggleModal({ camera: false, home: false });
+        navigation.replace("login");
+      }
+    });
+  }, [handleSignOut]);
+  function handleSignOut() {
+    signOut(getAuth());
+  }
   return (
     <View>
       <Modal animationType="fade" transparent={true} visible={logoutModal}>
@@ -55,7 +60,7 @@ export function HomeModal({ navigation }) {
                   Cancel
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => signOut(auth)}>
+              <TouchableOpacity onPress={handleSignOut}>
                 <Text style={{ textTransform: "uppercase", fontSize: 15 }}>
                   Yes
                 </Text>
@@ -178,7 +183,7 @@ export function HomeModal({ navigation }) {
             </View>
             <View style={styles.footer}>
               <Text style={[styles.copyright, { color: colors.text }]}>
-                Version 2.3.3
+                Version 2.3.5
               </Text>
               <Text style={[styles.copyright, { color: colors.text }]}>
                 &copy; Copyright 2022, Suman Biswas

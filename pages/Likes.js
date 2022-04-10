@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Like } from "../components/Like";
+import { LikeNew } from "../components/LikeNew";
+
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useTheme } from "@react-navigation/native";
 
@@ -30,11 +32,13 @@ export function Likes({ route, navigation }) {
         data={liked_by}
         renderItem={({ item }) => {
           return (
-            <Like
-              liked_by={item}
-              onLoad={handleOnLoad}
-              navigation={navigation}
-            />
+            <>
+              <LikeNew
+                liked_by={item}
+                onLoad={handleOnLoad}
+                navigation={navigation}
+              />
+            </>
           );
         }}
       />

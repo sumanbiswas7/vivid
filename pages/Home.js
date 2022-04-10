@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { actionCreators } from "../state/index";
 import { useTheme } from "@react-navigation/native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import BottomNavBar from "../components/BottomNavBar";
 import { useEffect, useState } from "react";
 import useFonts from "../hooks/useFonts";
 import {
@@ -32,6 +31,7 @@ export default function Home({ navigation }) {
   const tabBarHeight = useBottomTabBarHeight();
   const [initialLoad, setInitialLoad] = useState(false);
   const [postLoad, setPostLoad] = useState(false);
+  const [likeChange, setChangedLikes] = useState();
   const [currPostsload, setCurrPostLoad] = useState(false);
   const {
     setCurrentuserPosts,
@@ -116,15 +116,15 @@ export default function Home({ navigation }) {
             styles.container,
             {
               backgroundColor: colors.home_bg,
-              marginBottom: tabBarHeight,
             },
           ]}
         >
           <HeaderTop navigation={navigation} />
           <View style={[{ color: colors.primary }, styles.view]}>
             <FlatList
-              style={styles.posts_list}
+              style={[styles.posts_list, { marginBottom: tabBarHeight }]}
               showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ alignItems: "center" }}
               data={posts}
               renderItem={({ item }) => {
                 return (
@@ -135,12 +135,16 @@ export default function Home({ navigation }) {
                     profile={item.user_data.profile_img}
                     post_img={item.img}
                     caption={item.caption}
-                    likes={item.likes.likes}
-                    liked_by={item.likes.total_likes}
+                    likes={item.likes_data?.likes}
+                    liked_by={item.likes_data?.total_likes}
+                    prevLikesBy={item.likes?.total_likes}
+                    prevLikesCount={item.likes?.likes}
                     comments={item.comments}
                     id={item.id}
                     email={item.user_data.email}
                     navigation={navigation}
+                    marBottom={5}
+                    width={Dimensions.get("window").width - 15}
                   />
                 );
               }}
@@ -169,6 +173,5 @@ const styles = StyleSheet.create({
   posts_list: {
     marginTop: StatusBar.currentHeight + 55,
     paddingTop: 5,
-    // backgroundColor: "#d2d",
   },
 });

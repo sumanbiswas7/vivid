@@ -64,6 +64,20 @@ export const ReportProfileModal = ({
               Report Profile
             </Text>
           </MenuOption>
+          <MenuOption
+            onSelect={() =>
+              Alert.alert("would you like to block this user ?", "", [
+                {
+                  text: "NO",
+                },
+                {
+                  text: "YES",
+                },
+              ])
+            }
+          >
+            <Text style={{ color: "red", paddingVertical: 5 }}>Block User</Text>
+          </MenuOption>
           <MenuOption>
             <Text style={{ color: colors.text, paddingVertical: 5 }}>
               Close

@@ -203,8 +203,52 @@ export default function CreatePost({ navigation }) {
     }
   }
   async function uploadPost() {
+    function postImage(url) {
+      const DB = getFirestore();
+      const PostId = uuid.v4();
+      const postSchema = {
+        id: PostId,
+        date: moment(new Date()).format("DD-MM-YYYY, h:mm a"),
+        likes_data: {
+          likes: 0,
+          total_likes: [],
+        },
+        likes: {
+          likes: 0,
+          total_likes: [],
+        },
+        comments: [],
+        img: url,
+        caption: caption,
+        timestamp: new Date(),
+        user_data: {
+          username: currentuser.username,
+          email: currentuser.email,
+          city: currentuser.city,
+          profile_img: currentuser.profile,
+          isVerified: currentuser.isVerified,
+        },
+      };
+      setDoc(doc(DB, "posts", PostId), postSchema).then(() => {
+        setDoc(doc(DB, "users", currentuser.email), {
+          ...currentuser,
+          posts: [...currentuser.posts, PostId],
+        }).then(() => {
+          setButtonLoader(false);
+          console.log("POSTED");
+          setImage(false);
+          setIsUploading(false);
+          navigation.replace("home");
+        });
+      });
+    }
     setIsUploading(true);
     setButtonLoader(true);
+    if (!image && !caption) return;
+    if (!image) {
+      postImage("");
+      return;
+    }
     let data = {
       file: image,
       upload_preset: "nhpvtkem",
@@ -219,41 +263,6 @@ export default function CreatePost({ navigation }) {
       .then((resp) => resp.json())
       .then((data) => {
         postImage(data.url);
-        function postImage(url) {
-          const DB = getFirestore();
-          const PostId = uuid.v4();
-          const postSchema = {
-            id: PostId,
-            date: moment(new Date()).format("DD-MM-YYYY, h:mm a"),
-            likes: {
-              likes: 0,
-              total_likes: [],
-            },
-            comments: [],
-            img: url,
-            caption: caption,
-            timestamp: new Date(),
-            user_data: {
-              username: currentuser.username,
-              email: currentuser.email,
-              city: currentuser.city,
-              profile_img: currentuser.profile,
-              isVerified: currentuser.isVerified,
-            },
-          };
-          setDoc(doc(DB, "posts", PostId), postSchema).then(() => {
-            setDoc(doc(DB, "users", currentuser.email), {
-              ...currentuser,
-              posts: [...currentuser.posts, PostId],
-            }).then(() => {
-              setButtonLoader(false);
-              console.log("POSTED");
-              setImage(false);
-              setIsUploading(false);
-              navigation.replace("home");
-            });
-          });
-        }
       })
       .catch((err) => console.log(err));
   }

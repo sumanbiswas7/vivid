@@ -13,15 +13,18 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
-import { useSelector } from "react-redux";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Comment } from "../components/Comment";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import moment from "moment";
+import { useDispatch, useSelector } from "react-redux";
+import { actionCreators } from "../state/index";
+import { bindActionCreators } from "redux";
 
 export function Comments({ route, navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
+  const { setCurrentUser } = bindActionCreators(actionCreators, useDispatch());
   const { comments, userId, postImg, postId } = route.params;
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -78,9 +81,16 @@ export function Comments({ route, navigation }) {
             by: currentuser.email,
             text: input,
             time: moment(new Date()).format("DD-MM-YYYY, h:mm a"),
+            timestamp: new Date(),
+            user: {
+              username: currentuser.username,
+              profile: currentuser.profile,
+              isVerified: currentuser.isVerified,
+            },
           },
         ],
       }).then(() => {
+        updatePostCommentRef(currentuser.email, postId, "plus");
         setIsSending(false);
         setNotification(userId, "comment");
         setInput("");
@@ -91,7 +101,56 @@ export function Comments({ route, navigation }) {
       });
     }
   };
-
+  const updatePostCommentRef = async (user, postId, type) => {
+    const db = getFirestore();
+    const userRef = doc(db, "users", user);
+    if (currentuser.commented_posts) {
+      let commented_posts = [...currentuser.commented_posts];
+      if (type == "plus") {
+        const new_commented_posts = [
+          ...commented_posts.filter((o) => o != postId),
+          postId,
+        ];
+        const newCurrUser = {
+          ...currentuser,
+          commented_posts: new_commented_posts,
+        };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          commented_posts: new_commented_posts,
+        });
+      } else {
+        // TYPE == MINUS
+        const new_commented_posts = [
+          ...commented_posts.filter((o) => o != postId),
+        ];
+        const newCurrUser = {
+          ...currentuser,
+          commented_posts: new_commented_posts,
+        };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          commented_posts: new_commented_posts,
+        });
+      }
+    } else {
+      // IF commented_posts doesn't exist
+      if (type == "plus") {
+        const newCurrUser = { ...currentuser, commented_posts: [postId] };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          commented_posts: [postId],
+        });
+      } else {
+        // TYPE == MINUS
+        const newCurrUser = { ...currentuser, commented_posts: [] };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          commented_posts: [],
+        });
+      }
+    }
+  };
   return (
     <View style={[styles.container, { backgroundColor: colors.home_bg }]}>
       <View style={[styles.header, { backgroundColor: colors.home_fg }]}>

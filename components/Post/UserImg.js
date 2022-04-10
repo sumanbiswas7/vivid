@@ -6,7 +6,7 @@ import Feather from "react-native-vector-icons/Feather";
 export function UserImg(props) {
   const { colors } = useTheme();
   return (
-    <View>
+    <View style={styles.view}>
       {props.profile_img ? (
         <Image
           source={{
@@ -47,4 +47,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  view: {},
 });

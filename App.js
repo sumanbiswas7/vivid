@@ -187,16 +187,48 @@ export default function App() {
               }}
             >
               <Stack.Screen name="home" component={BottomTabNav} />
-              <Stack.Screen name="profile" component={Profile} />
-              <Stack.Screen name="signup" component={SignUp} />
-              <Stack.Screen name="login" component={LogIn} />
               <Stack.Screen name="createpost" component={CreatePost} />
-              <Stack.Screen name="likes" component={Likes} />
-              <Stack.Screen name="comments" component={Comments} />
-              <Stack.Screen name="otherprofile" component={OtherProfile} />
-              <Stack.Screen name="editprofile" component={EditProfile} />
-              <Stack.Screen name="notifications" component={Notifications} />
-              <Stack.Screen name="themes" component={Themes} />
+              <Stack.Screen name="profile" component={Profile} />
+              <Stack.Screen
+                name="signup"
+                component={SignUp}
+                options={{ animation: "fade" }}
+              />
+              <Stack.Screen
+                name="login"
+                component={LogIn}
+                options={{ animation: "fade" }}
+              />
+              <Stack.Screen
+                name="likes"
+                component={Likes}
+                options={{ animation: "fade_from_bottom" }}
+              />
+              <Stack.Screen
+                name="comments"
+                component={Comments}
+                options={{ animation: "fade_from_bottom" }}
+              />
+              <Stack.Screen
+                name="otherprofile"
+                component={OtherProfile}
+                options={{ animation: "fade" }}
+              />
+              <Stack.Screen
+                name="editprofile"
+                component={EditProfile}
+                options={{ animation: "fade" }}
+              />
+              <Stack.Screen
+                name="notifications"
+                component={Notifications}
+                options={{ animation: "fade_from_bottom" }}
+              />
+              <Stack.Screen
+                name="themes"
+                component={Themes}
+                options={{ animation: "fade" }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </ThemeContext.Provider>

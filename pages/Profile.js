@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import { ProfilePost } from "../components/ProfilePost";
 import moment from "moment";
 import { ProfileModal } from "../components/Modals/ProfileModal";
+import { Post } from "../components/Post/Post";
 
 export default function Profile({ navigation }) {
   const currUser = useSelector((state) => state.currentuser);
@@ -38,7 +39,7 @@ export default function Profile({ navigation }) {
   useEffect(() => {
     if (curUserPosts) {
       let tempTotalLikes = 0;
-      curUserPosts.map((p) => (tempTotalLikes += p.likes.likes));
+      curUserPosts.map((p) => (tempTotalLikes += p.likes_data?.likes));
       setTotalLikes(tempTotalLikes);
       setIsLoaded(true);
     }
@@ -77,6 +78,7 @@ export default function Profile({ navigation }) {
               justifyContent: "center",
               paddingBottom: 10,
             }}
+            showsVerticalScrollIndicator={false}
           >
             <View
               style={{
@@ -85,7 +87,7 @@ export default function Profile({ navigation }) {
                 backgroundColor: colors.bg_light,
                 paddingTop: SB.currentHeight + 80,
                 paddingBottom: 25,
-                marginBottom: 5,
+                marginBottom: 10,
                 width: Dimensions.get("window").width,
               }}
             >
@@ -185,7 +187,10 @@ export default function Profile({ navigation }) {
                   {currUser.bio}
                 </Text>
               ) : null}
-              {currUser.ig_link || currUser.git_link || currUser.fb_link ? (
+              {currUser.ig_link ||
+              currUser.git_link ||
+              currUser.fb_link ||
+              currUser.tw_link ? (
                 <View style={[styles.flex_row, { marginTop: 10 }]}>
                   {currUser.ig_link ? (
                     <TouchableOpacity
@@ -235,6 +240,22 @@ export default function Profile({ navigation }) {
                       />
                     </TouchableOpacity>
                   ) : null}
+                  {currUser.tw_link ? (
+                    <TouchableOpacity
+                      onPress={() =>
+                        Linking.openURL(
+                          `https://twitter.com/${currUser.tw_link}`
+                        )
+                      }
+                    >
+                      <AntDesign
+                        style={{ marginHorizontal: 8 }}
+                        name="twitter"
+                        size={20}
+                        color={colors.text}
+                      />
+                    </TouchableOpacity>
+                  ) : null}
                 </View>
               ) : null}
               <View style={[styles.flex_row, { marginTop: 10 }]}>
@@ -270,18 +291,39 @@ export default function Profile({ navigation }) {
             </View>
             {curUserPosts.length > 0 ? (
               <FlatList
-                style={{ marginBottom: 50 }}
+                style={{ marginBottom: 40 }}
+                contentContainerStyle={{ alignItems: "center" }}
                 showsVerticalScrollIndicator={false}
                 data={curUserPosts}
                 renderItem={({ item }) => {
                   return (
-                    <ProfilePost
-                      likes={item.likes.likes}
-                      img={item.img}
-                      userProfile={item.user_data.profile_img}
-                      userName={item.user_data.username}
-                      caption={item.caption}
+                    // <ProfilePost
+                    //   // likes={item.likes.likes}
+                    //   likes={item.likes_data?.likes}
+                    //   img={item.img}
+                    //   userProfile={item.user_data.profile_img}
+                    //   userName={item.user_data.username}
+                    //   caption={item.caption}
+                    //   date={moment(item.date, "DD-MM-YYYY, h:mm a").fromNow()}
+                    // />
+                    <Post
+                      username={item.user_data.username}
                       date={moment(item.date, "DD-MM-YYYY, h:mm a").fromNow()}
+                      isVerified={item.user_data.isVerified}
+                      profile={item.user_data.profile_img}
+                      post_img={item.img}
+                      caption={item.caption}
+                      likes={item.likes_data?.likes}
+                      liked_by={item.likes_data?.total_likes}
+                      prevLikesBy={item.likes?.total_likes}
+                      prevLikesCount={item.likes?.likes}
+                      comments={item.comments}
+                      id={item.id}
+                      email={item.user_data.email}
+                      navigation={navigation}
+                      bgcol={colors.bg_light}
+                      marBottom={10}
+                      width={Dimensions.get("window").width - 20}
                     />
                   );
                 }}

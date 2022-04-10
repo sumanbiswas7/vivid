@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  Modal,
 } from "react-native";
 import { UserImg } from "./UserImg";
 import { VerifiedText } from "./VerifiedText";
@@ -13,23 +12,44 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import AntDesign from "react-native-vector-icons/AntDesign";
 import ImageAutoHeight from "react-native-image-auto-height";
 import { StarFill, StarOutline } from "./Star";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { useTheme } from "@react-navigation/native";
 import { ReportPostModal } from "../Modals/ReportPostModal";
+import { useDispatch, useSelector } from "react-redux";
+import { actionCreators } from "../../state/index";
+import { bindActionCreators } from "redux";
 
 export function Post(props) {
   const currentuser = useSelector((state) => state.currentuser);
+  const allposts = useSelector((state) => state.posts);
+  const { setCurrentUser, setPosts } = bindActionCreators(
+    actionCreators,
+    useDispatch()
+  );
   const [liketemp, setLikeTemp] = useState(false);
   const [temp, setTemp] = useState(null);
   const [newArr, setNewArr] = useState(props.liked_by);
   const { colors } = useTheme();
+
   useEffect(() => {
-    if (props.liked_by.includes(currentuser.email)) {
-      setLikeTemp(true);
+    if (!props.liked_by) {
+      // if (props.prevLikesBy.includes(currentuser.email)) {
+      //   setLikeTemp(true);
+      // }
+      setTemp(props.prevLikesCount);
+    } else {
+      const isLikedByUser = props.liked_by?.filter(
+        (o) => o.by == currentuser.email
+      );
+      if (isLikedByUser && isLikedByUser.length > 0) {
+        if (isLikedByUser[0].by == currentuser.email) {
+          // Post is liked by user
+          setLikeTemp(true);
+        }
+      }
+      setTemp(props.likes);
     }
-    setTemp(props.likes);
   }, []);
 
   const setNotification = async (user, type) => {
@@ -43,7 +63,6 @@ export function Post(props) {
             data.notification[i].by == currentuser.username &&
             data.notification[i].img == props.post_img
           ) {
-            console.log(data.notification[i]);
             return;
           }
         }
@@ -64,7 +83,47 @@ export function Post(props) {
       }
     }
   };
-
+  const updatePostRef = async (user, postId, type) => {
+    const db = getFirestore();
+    const userRef = doc(db, "users", user);
+    if (currentuser.liked_posts) {
+      let liked_posts = [...currentuser.liked_posts];
+      if (type == "plus") {
+        const new_liked_posts = [
+          ...liked_posts.filter((o) => o != postId),
+          postId,
+        ];
+        const newCurrUser = { ...currentuser, liked_posts: new_liked_posts };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          liked_posts: new_liked_posts,
+        });
+      } else {
+        // TYPE == MINUS
+        const new_liked_posts = [...liked_posts.filter((o) => o != postId)];
+        const newCurrUser = { ...currentuser, liked_posts: new_liked_posts };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          liked_posts: new_liked_posts,
+        });
+      }
+    } else {
+      if (type == "plus") {
+        const newCurrUser = { ...currentuser, liked_posts: [postId] };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          liked_posts: [postId],
+        });
+      } else {
+        // TYPE == MINUS
+        const newCurrUser = { ...currentuser, liked_posts: [] };
+        setCurrentUser(newCurrUser);
+        await updateDoc(userRef, {
+          liked_posts: [],
+        });
+      }
+    }
+  };
   const updateLike = async (id, count, type) => {
     const db = getFirestore();
     const likeRef = doc(db, "posts", id);
@@ -101,10 +160,127 @@ export function Post(props) {
       console.log("Post -> UPDATE LIKE ERR" + error);
     }
   };
+  const updateLikeNew = async (id, count, type) => {
+    if (!props.liked_by) return;
+    const db = getFirestore();
+    const likeRef = doc(db, "posts", id);
+    if (type == "plus") {
+      if (temp === 0) {
+        // If the post has 0 likes
+        setTemp(1);
+        setNewArr([
+          {
+            by: currentuser.email,
+            username: currentuser.username,
+            isVerified: currentuser.isVerified,
+            profile: currentuser.profile,
+          },
+        ]);
+        updatePostLikes(count, {
+          by: currentuser.email,
+          username: currentuser.username,
+          isVerified: currentuser.isVerified,
+          profile: currentuser.profile,
+        });
+        await updateDoc(likeRef, {
+          likes_data: {
+            likes: count,
+            total_likes: [
+              {
+                by: currentuser.email,
+                username: currentuser.username,
+                isVerified: currentuser.isVerified,
+                profile: currentuser.profile,
+              },
+            ],
+          },
+        });
+        setNotification(props.email, "like");
+        updatePostRef(currentuser.email, id, "plus");
+        return;
+      }
+      const newArr = [...props.liked_by].filter((o) => {
+        return o.by != currentuser.email;
+      });
+      newArr.push({
+        by: currentuser.email,
+        username: currentuser.username,
+        isVerified: currentuser.isVerified,
+        profile: currentuser.profile,
+      });
+      // updating likes before navigation
+      setNewArr(newArr);
+      updatePostLikes(count, newArr);
+      await updateDoc(likeRef, {
+        likes_data: {
+          likes: count,
+          total_likes: newArr,
+        },
+      });
+      setNotification(props.email, "like");
+      updatePostRef(currentuser.email, id, "plus");
+    } else {
+      // unlike post
+      if (temp === 1) {
+        setTemp(0);
+        setNewArr([]);
+        updatePostLikes(count, []);
+        await updateDoc(likeRef, {
+          likes_data: {
+            likes: count,
+            total_likes: [],
+          },
+        });
+        updatePostRef(currentuser.email, id, "minus");
+        return;
+      }
+      const newArr = [...props.liked_by].filter((o) => {
+        return o.by != currentuser.email;
+      });
+      setNewArr(newArr);
+      updatePostLikes(count, newArr);
+      await updateDoc(likeRef, {
+        likes_data: {
+          likes: count,
+          total_likes: newArr,
+        },
+      });
+      updatePostRef(currentuser.email, id, "minus");
+    }
+  };
+  const updatePostLikes = (likeCount, likeObj) => {
+    // setTimeout(() => {
+    //   const singlePost = allposts.filter((o) => {
+    //     return o.id == props.id;
+    //   });
+    //   const newlikedata = {
+    //     ...singlePost[0],
+    //     likes_data: {
+    //       likes: likeCount,
+    //       total_likes: likeObj,
+    //     },
+    //   };
+    //   const idx = allposts.findIndex((o) => {
+    //     return o.id == props.id;
+    //   });
+    //   const newAllPost = [...allposts];
+    //   newAllPost[idx] = newlikedata;
+    //   setPosts(newAllPost);
+    // }, 1);
+    console.log(likeCount, likeObj);
+  };
 
   return (
     <View>
-      <View style={[styles.header, { backgroundColor: colors.home_fg }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: props.bgcol || colors.home_fg,
+            width: props.width,
+          },
+        ]}
+      >
         <TouchableOpacity
           onPress={() =>
             props.navigation.navigate("otherprofile", { email: props.email })
@@ -139,7 +315,11 @@ export function Post(props) {
         <Text
           style={[
             styles.caption,
-            { backgroundColor: colors.home_fg, color: colors.text },
+            {
+              backgroundColor: props.bgcol || colors.home_fg,
+              color: colors.text,
+              width: props.width,
+            },
           ]}
         >
           {props.caption}
@@ -147,11 +327,26 @@ export function Post(props) {
       ) : null}
       {props.post_img ? (
         <ImageAutoHeight
-          style={styles.post_img}
+          style={[
+            styles.post_img,
+            {
+              width: props.width,
+              height: "auto",
+            },
+          ]}
           source={{ uri: props.post_img }}
         />
       ) : null}
-      <View style={[styles.footer, { backgroundColor: colors.home_fg }]}>
+      <View
+        style={[
+          styles.footer,
+          {
+            backgroundColor: props.bgcol || colors.home_fg,
+            marginBottom: props.marBottom,
+            width: props.width,
+          },
+        ]}
+      >
         <View style={styles.post_interactions_cont}>
           {liketemp ? (
             <TouchableOpacity
@@ -159,7 +354,7 @@ export function Post(props) {
               onPress={() => {
                 setTemp((p) => p - 1);
                 setLikeTemp(false);
-                updateLike(props.id, temp - 1, "min");
+                updateLikeNew(props.id, temp - 1, "min");
               }}
             >
               <AntDesign name="like1" size={18} color={colors.text} />
@@ -171,7 +366,7 @@ export function Post(props) {
                 onPress={() => {
                   setTemp((p) => p + 1);
                   setLikeTemp(true);
-                  updateLike(props.id, temp + 1, "plus");
+                  updateLikeNew(props.id, temp + 1, "plus");
                 }}
               >
                 <AntDesign name="like2" size={18} color={colors.text} />
@@ -180,9 +375,11 @@ export function Post(props) {
           )}
           {temp == 1 ? (
             <TouchableOpacity
-              onPress={() =>
-                props.navigation.navigate("likes", { liked_by: newArr })
-              }
+              onPress={() => {
+                if (props.liked_by) {
+                  props.navigation.navigate("likes", { liked_by: newArr });
+                }
+              }}
               style={styles.like_text}
             >
               <Text
@@ -193,9 +390,11 @@ export function Post(props) {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              onPress={() =>
-                props.navigation.navigate("likes", { liked_by: newArr })
-              }
+              onPress={() => {
+                if (props.liked_by) {
+                  props.navigation.navigate("likes", { liked_by: newArr });
+                }
+              }}
               style={styles.like_text}
             >
               <Text
