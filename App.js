@@ -39,7 +39,13 @@ import { useEffect, useState, useLayoutEffect } from "react";
 import { createContext } from "react";
 import Onboarding from "react-native-onboarding-swiper";
 import ImageAutoHeight from "react-native-image-auto-height";
-import { Dimensions } from "react-native";
+import {
+  Dimensions,
+  Text,
+  View,
+  Linking,
+  TouchableOpacity,
+} from "react-native";
 import { MenuProvider } from "react-native-popup-menu";
 
 const Tab = createBottomTabNavigator();
@@ -126,13 +132,52 @@ export default function App() {
       }
     });
   }, []);
-
+  const PrivacyPolicyText = () => {
+    return (
+      <View style={{ alignItems: "center" }}>
+        <Text
+          style={{
+            marginHorizontal: 20,
+            fontSize: 17,
+            marginBottom: 20,
+            color: "#525252",
+          }}
+        >
+          By clicking "I Accept" button I agree that I have read and accepted
+          the &nbsp;
+          <Text
+            onPress={() =>
+              Linking.openURL(
+                "https://sumanbiswas.vercel.app/apps/privacy-policy/vivid"
+              )
+            }
+            style={{ color: "#DD3822" }}
+          >
+            Privacy Policy
+          </Text>
+        </Text>
+        <TouchableOpacity
+          onPress={() => setFirstLoad(false)}
+          style={{
+            backgroundColor: "#DD3822",
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderRadius: 5,
+          }}
+        >
+          <Text style={{ color: "#fff" }}>I Accept</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
   if (firstLoad) {
     return (
       <Onboarding
         onDone={() => setFirstLoad(false)}
-        onSkip={() => setFirstLoad(false)}
+        // onSkip={() => setFirstLoad(false)}
+        skipToPage={2}
         controlStatusBar={false}
+        showDone={false}
         pages={[
           {
             image: (
@@ -170,6 +215,23 @@ export default function App() {
             },
             subtitle:
               "vivid 2.0 comes with an improved user experience, faster loadings, optimized database access and an improved UI.",
+          },
+          {
+            image: (
+              <ImageAutoHeight
+                style={{
+                  width: Dimensions.get("window").width - 40,
+                  height: "auto",
+                }}
+                source={require("./assets/privacy_policy_ob.jpg")}
+              />
+            ),
+            backgroundColor: "#fff",
+            // title: "Privacy Policy",
+            subTitleStyles: {
+              marginBottom: 60,
+            },
+            subtitle: <PrivacyPolicyText />,
           },
         ]}
       />

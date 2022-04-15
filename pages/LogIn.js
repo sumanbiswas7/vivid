@@ -16,6 +16,7 @@ import { VividText } from "../components/VividText";
 import useFonts from "../hooks/useFonts";
 import { CircleLoader } from "../components/CircleLoader";
 import { Flow } from "react-native-animated-spinkit";
+
 export default function LogIn({ navigation }) {
   const [buttonLoader, setButtonLoader] = useState(false);
   const [errText, setErrText] = useState("");
