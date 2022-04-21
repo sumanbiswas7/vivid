@@ -6,20 +6,26 @@ import {
   Image,
   TextInput,
   Dimensions,
-  Linking,
 } from "react-native";
 import { ImageModal } from "../components/ImageModal";
-import { useDispatch, useSelector } from "react-redux";
-import { bindActionCreators } from "redux";
-import { actionCreators } from "../state";
 import { LinearGradient } from "expo-linear-gradient";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { useState, useEffect } from "react";
-import { Circle, Flow } from "react-native-animated-spinkit";
+import { Flow } from "react-native-animated-spinkit";
 import { useTheme } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync } from "expo-image-manipulator";
 import moment from "moment";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, getFirestore } from "firebase/firestore";
+import useFonts from "../hooks/useFonts";
+import { CircleLoader } from "../components/CircleLoader";
+import * as FileSystem from "expo-file-system";
+import { UserAgreement } from "../components/UserAgreement";
+
+import { useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../state";
 import {
   getStorage,
   ref as sRef,
@@ -27,20 +33,17 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import app from "../firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, getFirestore } from "firebase/firestore";
-import useFonts from "../hooks/useFonts";
-import { CircleLoader } from "../components/CircleLoader";
-import * as FileSystem from "expo-file-system";
 
 export default function SignUp({ navigation }) {
   const [buttonLoader, setButtonLoader] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
   const [errText, setErrText] = useState("");
   const [fontLoaded, setFontLoaded] = useState(false);
   const [image, setImage] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [userInput, setUserInput] = useState({ username: "" });
   const { colors } = useTheme();
+
   useEffect(() => {
     const LoadFonts = async () => {
       await useFonts();
@@ -174,6 +177,9 @@ export default function SignUp({ navigation }) {
       }
     }
   }
+  function handleAcceptState(bool) {
+    setIsAccepted(bool);
+  }
   return (
     <>
       {fontLoaded ? (
@@ -284,7 +290,7 @@ export default function SignUp({ navigation }) {
           ) : null}
 
           <TouchableOpacity
-            disabled={buttonLoader}
+            disabled={buttonLoader || !isAccepted}
             style={styles.signup_btn_box}
             onPress={handleSignUp}
           >
@@ -317,27 +323,7 @@ export default function SignUp({ navigation }) {
               here
             </Text>
           </>
-          <Text
-            style={{
-              marginHorizontal: 20,
-              marginTop: 50,
-              marginBottom: -50,
-              color: colors.text,
-            }}
-          >
-            By clicking "Sign Up" I accept that I have read and accepted the
-            &nbsp;
-            <Text
-              onPress={() =>
-                Linking.openURL(
-                  "https://sumanbiswas.vercel.app/apps/privacy-policy/vivid"
-                )
-              }
-              style={{ color: colors.gradient_2 }}
-            >
-              Privacy Policy
-            </Text>
-          </Text>
+          <UserAgreement handleAcceptState={handleAcceptState} />
         </View>
       ) : (
         <CircleLoader />

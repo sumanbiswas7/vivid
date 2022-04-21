@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text, Dimensions } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useTheme } from "@react-navigation/native";
 
 export function Notification(props) {
   return (

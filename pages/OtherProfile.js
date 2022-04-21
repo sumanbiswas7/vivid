@@ -24,7 +24,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useTheme } from "@react-navigation/native";
-import MaskedView from "@react-native-masked-view/masked-view";
+// import MaskedView from "@react-native-masked-view/masked-view";
+import MaskedView from "@react-native-community/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { StarFill, StarOutline } from "../components/Post/Star";
 import { useEffect, useState } from "react";

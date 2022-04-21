@@ -1,5 +1,6 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import MaskedView from "@react-native-masked-view/masked-view";
+// import MaskedView from "@react-native-masked-view/masked-view";
+import MaskedView from "@react-native-community/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@react-navigation/native";
 export function VividText(props) {

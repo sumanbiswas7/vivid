@@ -68,14 +68,24 @@ export function Post(props) {
         }
         const newNotArr = [
           ...docSnap.data().notification,
-          { type: "like", by: currentuser.username, img: props.post_img },
+          {
+            type: "like",
+            by: currentuser.username,
+            img: props.post_img,
+            timestamp: new Date().toString(),
+          },
         ];
         await updateDoc(docRef, {
           notification: newNotArr,
         });
       } else {
         const newNotArr = [
-          { type: "like", by: currentuser.username, img: props.post_img },
+          {
+            type: "like",
+            by: currentuser.username,
+            img: props.post_img,
+            timestamp: new Date().toString(),
+          },
         ];
         await updateDoc(docRef, {
           notification: newNotArr,

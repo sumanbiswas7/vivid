@@ -49,6 +49,7 @@ export function Comments({ route, navigation }) {
             by: currentuser.username,
             img: postImg,
             comment: input,
+            timestamp: new Date().toString(),
           },
         ];
         await updateDoc(docRef, {
@@ -61,6 +62,7 @@ export function Comments({ route, navigation }) {
             by: currentuser.username,
             img: postImg,
             comment: input,
+            timestamp: new Date().toString(),
           },
         ];
         await updateDoc(docRef, {

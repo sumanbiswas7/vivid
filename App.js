@@ -174,10 +174,9 @@ export default function App() {
     return (
       <Onboarding
         onDone={() => setFirstLoad(false)}
-        // onSkip={() => setFirstLoad(false)}
-        skipToPage={2}
+        onSkip={() => setFirstLoad(false)}
         controlStatusBar={false}
-        showDone={false}
+        // showDone={false}
         pages={[
           {
             image: (
@@ -216,23 +215,6 @@ export default function App() {
             subtitle:
               "vivid 2.0 comes with an improved user experience, faster loadings, optimized database access and an improved UI.",
           },
-          {
-            image: (
-              <ImageAutoHeight
-                style={{
-                  width: Dimensions.get("window").width - 40,
-                  height: "auto",
-                }}
-                source={require("./assets/privacy_policy_ob.jpg")}
-              />
-            ),
-            backgroundColor: "#fff",
-            // title: "Privacy Policy",
-            subTitleStyles: {
-              marginBottom: 60,
-            },
-            subtitle: <PrivacyPolicyText />,
-          },
         ]}
       />
     );
@@ -243,7 +225,7 @@ export default function App() {
         <ThemeContext.Provider value={themedata}>
           <NavigationContainer theme={theme}>
             <Stack.Navigator
-              initialRouteName="home"
+              // initialRouteName="home"
               screenOptions={{
                 headerShown: false,
               }}
@@ -277,11 +259,6 @@ export default function App() {
                 options={{ animation: "fade" }}
               />
               <Stack.Screen
-                name="editprofile"
-                component={EditProfile}
-                options={{ animation: "fade" }}
-              />
-              <Stack.Screen
                 name="notifications"
                 component={Notifications}
                 options={{ animation: "fade_from_bottom" }}
@@ -289,6 +266,11 @@ export default function App() {
               <Stack.Screen
                 name="themes"
                 component={Themes}
+                options={{ animation: "fade" }}
+              />
+              <Stack.Screen
+                name="editprofile"
+                component={EditProfile}
                 options={{ animation: "fade" }}
               />
             </Stack.Navigator>

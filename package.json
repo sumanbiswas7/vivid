@@ -1,6 +1,6 @@
 {
   "name": "vivid",
-  "version": "2.3.6",
+  "version": "2.3.8",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.2",
     "@react-native-async-storage/async-storage": "^1.16.1",
-    "@react-native-masked-view/masked-view": "0.2.6",
+    "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/drawer": "^6.2.0",
     "@react-navigation/native": "^6.0.6",
@@ -33,6 +33,7 @@
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
     "react-native-animated-spinkit": "^1.5.2",
+    "react-native-bouncy-checkbox": "^2.1.10",
     "react-native-gesture-handler": "~2.1.0",
     "react-native-image-auto-height": "^1.0.4",
     "react-native-onboarding-swiper": "^1.2.0",

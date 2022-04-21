@@ -15,7 +15,8 @@ import { StatusBar as ESB } from "expo-status-bar";
 import { useTheme } from "@react-navigation/native";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import MaskedView from "@react-native-masked-view/masked-view";
+// import MaskedView from "@react-native-masked-view/masked-view";
+import MaskedView from "@react-native-community/masked-view";
 import { UserImg } from "../components/Post/UserImg";
 import { actionCreators } from "../state";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,6 +35,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import * as FileSystem from "expo-file-system";
+import { Test } from "../components/Test";
 
 export function EditProfile({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
@@ -306,7 +308,10 @@ export function EditProfile({ navigation }) {
             <LinearGradient
               colors={[colors.gradient_1, colors.gradient_2]}
               start={{ x: 0.9, y: 0.2 }}
-              style={{ flex: 1 }}
+              style={{
+                flex: 1,
+                backgroundColor: "transparent",
+              }}
             />
           </MaskedView>
         </TouchableOpacity>

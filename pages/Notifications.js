@@ -10,13 +10,14 @@ import {
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 import { useTheme } from "@react-navigation/native";
 
 export function Notifications({ navigation }) {
   const currentuser = useSelector((state) => state.currentuser);
   const { colors } = useTheme();
+  const [notifications, setNotifications] = useState([]);
   async function clearNotification(email) {
     const userRef = doc(getFirestore(), "users", email);
     await updateDoc(userRef, {
@@ -25,6 +26,10 @@ export function Notifications({ navigation }) {
   }
   useEffect(() => {
     clearNotification(currentuser.email);
+    // const NOT = currentuser.notification?.sort(function (o1, o2) {
+    //   return new Date(o2.date) - new Date(o1.date);
+    // });
+    // setNotifications(NOT.reverse());
   }, []);
   return (
     <View style={[styles.container, { backgroundColor: colors.home_bg }]}>
@@ -45,11 +50,11 @@ export function Notifications({ navigation }) {
           return (
             <View style={styles.not_container}>
               {item.type == "like" ? (
-                <Text style={styles.not_text}>
+                <Text style={[styles.not_text, { color: colors.text }]}>
                   {item.by} has {item.type}d your post
                 </Text>
               ) : (
-                <Text style={styles.not_text}>
+                <Text style={[styles.not_text, { color: colors.text }]}>
                   {item.by} has {item.type}ed &quot;{item.comment}&quot; on your
                   post
                 </Text>
