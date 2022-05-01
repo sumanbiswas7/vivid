@@ -20,7 +20,7 @@ export function UserAgreement({ handleAcceptState }) {
         fillColor={colors.gradient_2}
       />
       <Text style={acceptState ? { color: colors.text } : { color: "#6b6b6b" }}>
-        I confirm that I have read, and agree to all rules on vivid's &nbsp;
+        I confirm that I have read, and agree to vivid's &nbsp;
         <Text
           onPress={() =>
             Linking.openURL(
@@ -29,9 +29,19 @@ export function UserAgreement({ handleAcceptState }) {
           }
           style={{ color: colors.gradient_2 }}
         >
-          Privacy Policy&nbsp;
+          User Policy&nbsp;
         </Text>
-        <Text>Page</Text>
+        <Text>and&nbsp;</Text>
+        <Text
+          onPress={() =>
+            Linking.openURL(
+              "https://sumanbiswas.vercel.app/apps/terms-of-use/vivid"
+            )
+          }
+          style={{ color: colors.gradient_2 }}
+        >
+          Terms of Use
+        </Text>
       </Text>
     </View>
   );
